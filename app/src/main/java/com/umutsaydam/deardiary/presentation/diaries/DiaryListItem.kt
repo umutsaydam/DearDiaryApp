@@ -1,4 +1,4 @@
-package com.umutsaydam.deardiary.presentation.diary
+package com.umutsaydam.deardiary.presentation.diaries
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
