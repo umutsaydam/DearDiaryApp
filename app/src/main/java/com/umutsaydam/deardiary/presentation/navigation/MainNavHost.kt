@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.umutsaydam.deardiary.presentation.addDiary.AddDiaryScreen
 import com.umutsaydam.deardiary.presentation.diaries.DiariesScreen
 import com.umutsaydam.deardiary.presentation.insights.InsightsScreen
 import com.umutsaydam.deardiary.presentation.settings.SettingsScreen
@@ -26,6 +27,10 @@ fun MainNavHost() {
 
         composable(Route.Settings.route) {
             SettingsScreen(navController)
+        }
+
+        composable(Route.AddDiary.route) {
+            AddDiaryScreen(navController)
         }
     }
 }

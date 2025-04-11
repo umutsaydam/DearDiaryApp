@@ -6,4 +6,5 @@ sealed class Route(
     data object Insights: Route("Insights")
     data object Diaries: Route("Diaries")
     data object Settings: Route("Settings")
+    data object AddDiary: Route("AddDiary")
 }
