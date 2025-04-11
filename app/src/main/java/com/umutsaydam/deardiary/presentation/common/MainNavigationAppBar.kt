@@ -1,4 +1,4 @@
-package com.umutsaydam.deardiary.presentation
+package com.umutsaydam.deardiary.presentation.common
 
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon

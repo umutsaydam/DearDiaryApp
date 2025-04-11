@@ -4,9 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.umutsaydam.deardiary.presentation.DiariesScreen
-import com.umutsaydam.deardiary.presentation.InsightsScreen
-import com.umutsaydam.deardiary.presentation.SettingsScreen
+import com.umutsaydam.deardiary.presentation.diary.DiariesScreen
+import com.umutsaydam.deardiary.presentation.insights.InsightsScreen
+import com.umutsaydam.deardiary.presentation.settings.SettingsScreen
 
 @Composable
 fun MainNavHost() {

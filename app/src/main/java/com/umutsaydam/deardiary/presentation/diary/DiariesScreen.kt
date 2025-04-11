@@ -1,4 +1,4 @@
-package com.umutsaydam.deardiary.presentation
+package com.umutsaydam.deardiary.presentation.diary
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -21,6 +21,7 @@ import androidx.navigation.NavHostController
 import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.domain.DiaryEntity
 import com.umutsaydam.deardiary.presentation.Dimens.CORNER_MEDIUM
+import com.umutsaydam.deardiary.presentation.common.MainNavigationAppBar
 import java.util.Date
 import java.util.UUID
 

@@ -1,4 +1,4 @@
-package com.umutsaydam.deardiary.presentation
+package com.umutsaydam.deardiary.presentation.diary
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
