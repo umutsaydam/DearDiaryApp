@@ -22,6 +22,8 @@ import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.domain.DiaryEntity
 import com.umutsaydam.deardiary.presentation.Dimens.CORNER_MEDIUM
 import com.umutsaydam.deardiary.presentation.common.MainNavigationAppBar
+import com.umutsaydam.deardiary.presentation.navigation.Route
+import com.umutsaydam.deardiary.util.safeNavigate
 import java.util.Date
 import java.util.UUID
 
@@ -56,9 +58,7 @@ fun DiariesScreen(navController: NavHostController) {
         },
         containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
         floatingActionButton = {
-            AddDiaryFab {
-
-            }
+            AddDiaryFab { navController.safeNavigate(Route.AddDiary.route) }
         },
         bottomBar = {
             MainNavigationAppBar(navController)
