@@ -103,72 +103,62 @@ fun SettingsScreen(navController: NavHostController) {
 
             if (isLogOutDialogOpen) {
                 showLogoutDialog(
-                    onConfirm = {
-                        isLogOutDialogOpen = false
-                    },
-                    onDismissed = {
-                        isLogOutDialogOpen = false
-                    }
+                    onConfirm = { isLogOutDialogOpen = false },
+                    onDismissed = { isLogOutDialogOpen = false }
                 )
             }
 
-            ListItem(
-                modifier = Modifier.clickable {
-                    isReminderTimeOpen = true
-                },
-                headlineContent = { Text("Daily Reminder") },
-                supportingContent = { Text("Set daily reminders.") },
-                leadingContent = {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_notification_outline),
-                        contentDescription = "Set daily reminders."
-                    )
-                }
+            SettingsListItem(
+                title = "Daily Reminder",
+                description = "Set daily reminders.",
+                onClick = { isReminderTimeOpen = true },
+                iconRes = R.drawable.ic_notification_outline,
+                contentDesc = "Daily Reminder icon"
             )
 
-            ListItem(
-                modifier = Modifier.clickable {
-                    isFontSettingsOpen = true
-                },
-                headlineContent = { Text("Font Family and Size") },
-                supportingContent = { Text("Set font family and size.") },
-                leadingContent = {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_text_filled),
-                        contentDescription = "Set font family and size."
-                    )
-                }
+            SettingsListItem(
+                title = "Font Family and Size",
+                description = "Set font family and size.",
+                onClick = { isFontSettingsOpen = true },
+                iconRes = R.drawable.ic_text_filled,
+                contentDesc = "Font family and size icon"
             )
 
-            ListItem(
-                modifier = Modifier.clickable {
-                    navController.safeNavigate(Route.PinSettings.route)
-                },
-                headlineContent = { Text("Set a Pin") },
-                supportingContent = { Text("Set a pin and keep your diaries in secure.") },
-                leadingContent = {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_lock_outline),
-                        contentDescription = "Set font family and size."
-                    )
-                }
+            SettingsListItem(
+                title = "Set a Pin",
+                description = "Set a pin and keep your diaries in secure.",
+                onClick = { navController.safeNavigate(Route.PinSettings.route) },
+                iconRes = R.drawable.ic_lock_outline,
+                contentDesc = "Set a pin icon"
             )
 
-            ListItem(
-                modifier = Modifier.clickable {
-                    isLogOutDialogOpen = true
-                },
-                headlineContent = { Text("Log out") },
-                supportingContent = { Text("Log out your account.") },
-                leadingContent = {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_log_out_outline),
-                        contentDescription = "Set font family and size."
-                    )
-                }
+            SettingsListItem(
+                title = "Log out",
+                description = "Log out your account.",
+                onClick = { isLogOutDialogOpen = true },
+                iconRes = R.drawable.ic_log_out_outline,
+                contentDesc = "Log out icon"
             )
         }
     }
+}
+
+@Composable
+fun SettingsListItem(
+    title: String,
+    description: String,
+    onClick: () -> Unit,
+    iconRes: Int,
+    contentDesc: String
+) {
+    ListItem(
+        modifier = Modifier.clickable { onClick() },
+        headlineContent = { Text(title) },
+        supportingContent = { Text(description) },
+        leadingContent = {
+            Icon(painter = painterResource(iconRes), contentDescription = contentDesc)
+        }
+    )
 }
 
 @Composable
