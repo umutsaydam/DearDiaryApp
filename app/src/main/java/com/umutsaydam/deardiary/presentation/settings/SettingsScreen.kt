@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -36,6 +34,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import com.umutsaydam.deardiary.R
+import com.umutsaydam.deardiary.presentation.common.BaseAlertDialog
 import com.umutsaydam.deardiary.presentation.common.BaseScaffold
 import com.umutsaydam.deardiary.presentation.common.MainNavigationAppBar
 import com.umutsaydam.deardiary.presentation.navigation.Route
@@ -177,30 +176,16 @@ fun showLogoutDialog(
     onConfirm: () -> Unit,
     onDismissed: () -> Unit,
 ) {
-    AlertDialog(
-        icon = {
-            Icon(
-                painter = painterResource(R.drawable.ic_log_out_outline),
-                contentDescription = "Log out"
-            )
-        },
-        title = {
-            Text(
-                "Log out"
-            )
-        },
-        text = {
-            Text(
-                "You are about to log out of your account, are you sure?"
-            )
-        },
-        onDismissRequest = { onDismissed() },
+    BaseAlertDialog(
+        icon = R.drawable.ic_log_out_outline,
+        contentDesc = "Logo out",
+        title = "Log out",
+        text = { Text("Log out") },
+        onDismissed = { onDismissed() },
         confirmButton = {
-            TextButton(
-                onClick = { onConfirm() }
-            ) {
+            TextButton(onClick = { onConfirm() }) {
                 Text(
-                    text = "Log out",
+                    text = "You are about to log out of your account, are you sure?",
                     color = MaterialTheme.colorScheme.primary
                 )
             }
@@ -209,17 +194,8 @@ fun showLogoutDialog(
             TextButton(
                 modifier = Modifier.padding(end = 8.dp),
                 onClick = { onConfirm() }
-            ) {
-                Text(
-                    text = "Cancel",
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-        },
-        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-        iconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        shape = AlertDialogDefaults.shape
+            ) { Text(text = "Cancel", color = MaterialTheme.colorScheme.primary) }
+        }
     )
 }
 

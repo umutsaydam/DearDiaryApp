@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -23,6 +21,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.umutsaydam.deardiary.R
+import com.umutsaydam.deardiary.presentation.common.BaseAlertDialog
 
 @Composable
 fun FontSettingsDialog(
@@ -46,19 +45,11 @@ fun FontSettingsDialog(
     )
     var isFontExpanded by remember { mutableStateOf(false) }
 
-    AlertDialog(
+    BaseAlertDialog(
         modifier = modifier.fillMaxHeight(0.8F),
-        icon = {
-            Icon(
-                painter = painterResource(R.drawable.ic_text_filled),
-                contentDescription = "Select Font Family and Size"
-            )
-        },
-        title = {
-            Text(
-                "Select Font Family and Size"
-            )
-        },
+        icon = R.drawable.ic_text_filled,
+        contentDesc = "Select Font Family and Size",
+        title = "Select Font Family and Size",
         text = {
             Column {
                 Box {
@@ -103,15 +94,10 @@ fun FontSettingsDialog(
                 )
             }
         },
-        onDismissRequest = { onDismissed() },
+        onDismissed = { onDismissed() },
         confirmButton = {
-            TextButton(
-                onClick = { onDismissed() }
-            ) {
-                Text(
-                    text = "Save",
-                    color = MaterialTheme.colorScheme.primary
-                )
+            TextButton(onClick = { onDismissed() }) {
+                Text(text = "Save", color = MaterialTheme.colorScheme.primary)
             }
         },
         dismissButton = {
@@ -124,10 +110,6 @@ fun FontSettingsDialog(
                     color = MaterialTheme.colorScheme.primary
                 )
             }
-        },
-        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-        iconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        shape = AlertDialogDefaults.shape
+        }
     )
 }
