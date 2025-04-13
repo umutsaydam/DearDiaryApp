@@ -5,6 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.umutsaydam.deardiary.presentation.addDiary.AddDiaryScreen
+import com.umutsaydam.deardiary.presentation.auth.AuthScreen
 import com.umutsaydam.deardiary.presentation.diaries.DiariesScreen
 import com.umutsaydam.deardiary.presentation.insights.InsightsScreen
 import com.umutsaydam.deardiary.presentation.settings.SettingsScreen
@@ -18,7 +19,7 @@ fun MainNavHost() {
 
     NavHost(
         navController = navController,
-        startDestination = Route.Diaries.route
+        startDestination = Route.Auth.route
     ) {
         composable(Route.Diaries.route) {
             DiariesScreen(navController)
@@ -47,5 +48,10 @@ fun MainNavHost() {
         composable(Route.SetFingerPrint.route) {
             SetFingerPrintScreen(navController)
         }
+
+        composable(Route.Auth.route) {
+            AuthScreen(navController)
+        }
+
     }
 }

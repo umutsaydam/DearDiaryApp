@@ -10,4 +10,5 @@ sealed class Route(
     data object PinSettings: Route("PinSettings")
     data object SetPin: Route("SetPin")
     data object SetFingerPrint: Route("SetFingerPrint")
+    data object Auth: Route("Auth")
 }

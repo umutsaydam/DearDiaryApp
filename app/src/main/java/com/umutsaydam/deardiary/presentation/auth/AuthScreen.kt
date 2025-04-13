@@ -1,0 +1,224 @@
+package com.umutsaydam.deardiary.presentation.auth
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import com.umutsaydam.deardiary.R
+import com.umutsaydam.deardiary.domain.AuthStateEnum
+import com.umutsaydam.deardiary.presentation.navigation.Route
+import com.umutsaydam.deardiary.util.safeNavigate
+
+@Composable
+fun AuthScreen(navController: NavHostController) {
+    var authState by remember { mutableStateOf(AuthStateEnum.LOGIN) }
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var passwordConfirm by remember { mutableStateOf("") }
+
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+
+    val formWidth = when {
+        screenWidth < 360.dp -> 0.85f
+        screenWidth < 600.dp -> 0.6f
+        else -> 0.4f
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(
+            painter = painterResource(R.drawable.app_logo_medium),
+            contentDescription = "App logo",
+            contentScale = ContentScale.Fit
+        )
+
+        Text(
+            text = "Dear Diary",
+            style = MaterialTheme.typography.displayMedium
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth(formWidth)
+                .imePadding(),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            AuthOutlineText(
+                modifier = Modifier.fillMaxWidth(),
+                text = username,
+                onValueChange = { value ->
+                    username = value
+                },
+                textInfo = "Username",
+                leadIcon = R.drawable.ic_person_outline,
+                contentDesc = "Username icon",
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Text
+                )
+            )
+
+            AuthOutlineText(
+                modifier = Modifier.fillMaxWidth(),
+                text = password,
+                onValueChange = { value ->
+                    password = value
+                },
+                textInfo = "Password",
+                leadIcon = R.drawable.ic_password_outline,
+                contentDesc = "Password icon",
+                keyboardOptions = KeyboardOptions(
+                    imeAction = if (authState == AuthStateEnum.LOGIN) ImeAction.Done else ImeAction.Next,
+                    keyboardType = KeyboardType.Password
+                )
+            )
+
+            if (authState == AuthStateEnum.REGISTER) {
+                AuthOutlineText(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = passwordConfirm,
+                    onValueChange = { value ->
+                        passwordConfirm = value
+                    },
+                    textInfo = "Confirm",
+                    leadIcon = R.drawable.ic_password_outline,
+                    contentDesc = "Password confirm icon",
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done,
+                        keyboardType = KeyboardType.Password
+                    )
+                )
+            }
+
+            Button(
+                onClick = { navController.safeNavigate(Route.Diaries.route) },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(if (authState == AuthStateEnum.LOGIN) "Sign in" else "Sign up")
+            }
+        }
+    }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 5.dp),
+        contentAlignment = Alignment.BottomCenter
+    ) {
+        ColorfulText(
+            normalText = if (authState == AuthStateEnum.LOGIN) "Don't you have an account? " else "Do you have an account? ",
+            normalTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            colorfulText = if (authState == AuthStateEnum.LOGIN) "Sign up now." else "Sign in now.",
+            colorfulTextColor = MaterialTheme.colorScheme.primary,
+            onClick = {
+                authState = if (authState == AuthStateEnum.LOGIN) {
+                    AuthStateEnum.REGISTER
+                } else {
+                    passwordConfirm = ""
+                    AuthStateEnum.LOGIN
+                }
+            },
+            style = MaterialTheme.typography.titleSmall
+        )
+    }
+}
+
+@Composable
+fun AuthOutlineText(
+    modifier: Modifier = Modifier,
+    text: String,
+    onValueChange: (String) -> Unit,
+    textInfo: String,
+    leadIcon: Int,
+    contentDesc: String,
+    keyboardOptions: KeyboardOptions
+) {
+    OutlinedTextField(
+        value = text,
+        onValueChange = { onValueChange(it) },
+        label = { Text(textInfo) },
+        placeholder = { Text(textInfo) },
+        singleLine = true,
+        leadingIcon = {
+            Icon(
+                painter = painterResource(leadIcon),
+                contentDescription = contentDesc,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        },
+        modifier = modifier,
+        keyboardOptions = keyboardOptions
+    )
+}
+
+@Composable
+fun ColorfulText(
+    modifier: Modifier = Modifier,
+    normalText: String,
+    normalTextColor: Color,
+    colorfulText: String,
+    colorfulTextColor: Color,
+    onClick: () -> Unit,
+    style: TextStyle
+) {
+    val annotatedText = buildAnnotatedString {
+        append(normalText)
+        withStyle(
+            style = SpanStyle(
+                color = colorfulTextColor,
+                fontWeight = FontWeight.Bold
+            )
+        ) {
+            append(colorfulText)
+        }
+    }
+    Text(
+        modifier = modifier
+            .padding(10.dp)
+            .clickable { onClick() },
+        text = annotatedText,
+        style = style,
+        color = normalTextColor
+    )
+}
