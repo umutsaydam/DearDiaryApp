@@ -11,15 +11,19 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BaseScaffold(
-    title: String,
+    title: String = "",
     topActions: @Composable RowScope.() -> Unit = {},
-    navigation:  @Composable () -> Unit = {},
+    navigation: @Composable () -> Unit = {},
     fabContent: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
+    containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
+    titleContentColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    actionIconContentColor: Color = MaterialTheme.colorScheme.onSurfaceVariant,
     content: @Composable (PaddingValues) -> Unit
 ) {
     Scaffold(
@@ -30,9 +34,9 @@ fun BaseScaffold(
                 actions = topActions,
                 navigationIcon = navigation,
                 colors = TopAppBarDefaults.topAppBarColors().copy(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    actionIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    containerColor = containerColor,
+                    titleContentColor = titleContentColor,
+                    actionIconContentColor = actionIconContentColor
                 )
             )
         },

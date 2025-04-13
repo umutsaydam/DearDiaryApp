@@ -14,10 +14,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -41,11 +38,11 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.domain.PinStateEnum
+import com.umutsaydam.deardiary.presentation.common.BaseScaffold
 import com.umutsaydam.deardiary.util.Constants.PIN_LENGTH
 import com.umutsaydam.deardiary.util.popBackStackOrIgnore
 import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SetPinScreen(navController: NavHostController) {
     val focusRequester = remember { FocusRequester() }
@@ -70,30 +67,20 @@ fun SetPinScreen(navController: NavHostController) {
         }
     }
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = {},
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            navController.popBackStackOrIgnore()
-                        },
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_arrow_back_filled),
-                            contentDescription = "Back to the previous screen"
-                        )
-                    }
+    BaseScaffold(
+        navigation = {
+            IconButton(
+                onClick = {
+                    navController.popBackStackOrIgnore()
                 },
-                colors = TopAppBarDefaults.topAppBarColors().copy(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_arrow_back_filled),
+                    contentDescription = "Back to the previous screen"
                 )
-            )
+            }
         },
-        containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
     ) { paddingValues ->
         Column(
             modifier = Modifier
