@@ -64,4 +64,6 @@ dependencies {
     implementation("com.airbnb.android:lottie-compose:4.0.0")
     // Biometric
     implementation(libs.androidx.biometric)
+    // Splash Screen
+    implementation(libs.androidx.core.splashscreen)
 }
