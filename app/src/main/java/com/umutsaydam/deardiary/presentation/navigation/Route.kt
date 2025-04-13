@@ -7,4 +7,6 @@ sealed class Route(
     data object Diaries: Route("Diaries")
     data object Settings: Route("Settings")
     data object AddDiary: Route("AddDiary")
+    data object PinSettings: Route("PinSettings")
+    data object SetPin: Route("SetPin")
 }

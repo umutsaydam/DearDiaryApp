@@ -8,6 +8,8 @@ import com.umutsaydam.deardiary.presentation.addDiary.AddDiaryScreen
 import com.umutsaydam.deardiary.presentation.diaries.DiariesScreen
 import com.umutsaydam.deardiary.presentation.insights.InsightsScreen
 import com.umutsaydam.deardiary.presentation.settings.SettingsScreen
+import com.umutsaydam.deardiary.presentation.settings.pinSettings.PinSettingsScreen
+import com.umutsaydam.deardiary.presentation.settings.pinSettings.SetPinScreen
 
 @Composable
 fun MainNavHost() {
@@ -31,6 +33,14 @@ fun MainNavHost() {
 
         composable(Route.AddDiary.route) {
             AddDiaryScreen(navController)
+        }
+
+        composable(Route.PinSettings.route) {
+            PinSettingsScreen(navController)
+        }
+
+        composable(Route.SetPin.route) {
+            SetPinScreen(navController)
         }
     }
 }

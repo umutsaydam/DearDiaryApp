@@ -41,7 +41,9 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.presentation.common.MainNavigationAppBar
+import com.umutsaydam.deardiary.presentation.navigation.Route
 import com.umutsaydam.deardiary.presentation.settings.fontSettings.FontSettingsDialog
+import com.umutsaydam.deardiary.util.safeNavigate
 import java.text.SimpleDateFormat
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -156,7 +158,7 @@ fun SettingsScreen(navController: NavHostController) {
 
             ListItem(
                 modifier = Modifier.clickable {
-
+                    navController.safeNavigate(Route.PinSettings.route)
                 },
                 headlineContent = { Text("Set a Pin") },
                 supportingContent = { Text("Set a pin and keep your diaries in secure.") },
