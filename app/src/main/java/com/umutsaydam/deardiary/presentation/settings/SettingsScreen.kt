@@ -35,6 +35,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavHostController
 import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.presentation.common.BaseAlertDialog
+import com.umutsaydam.deardiary.presentation.common.BaseListItem
 import com.umutsaydam.deardiary.presentation.common.BaseScaffold
 import com.umutsaydam.deardiary.presentation.common.MainNavigationAppBar
 import com.umutsaydam.deardiary.presentation.navigation.Route
@@ -108,7 +109,7 @@ fun SettingsScreen(navController: NavHostController) {
                 )
             }
 
-            SettingsListItem(
+            BaseListItem(
                 title = "Daily Reminder",
                 description = "Set daily reminders.",
                 onClick = { isReminderTimeOpen = true },
@@ -116,7 +117,7 @@ fun SettingsScreen(navController: NavHostController) {
                 contentDesc = "Daily Reminder icon"
             )
 
-            SettingsListItem(
+            BaseListItem(
                 title = "Font Family and Size",
                 description = "Set font family and size.",
                 onClick = { isFontSettingsOpen = true },
@@ -124,7 +125,7 @@ fun SettingsScreen(navController: NavHostController) {
                 contentDesc = "Font family and size icon"
             )
 
-            SettingsListItem(
+            BaseListItem(
                 title = "Set a Pin",
                 description = "Set a pin and keep your diaries in secure.",
                 onClick = { navController.safeNavigate(Route.PinSettings.route) },
@@ -132,7 +133,7 @@ fun SettingsScreen(navController: NavHostController) {
                 contentDesc = "Set a pin icon"
             )
 
-            SettingsListItem(
+            BaseListItem(
                 title = "Log out",
                 description = "Log out your account.",
                 onClick = { isLogOutDialogOpen = true },
@@ -141,24 +142,6 @@ fun SettingsScreen(navController: NavHostController) {
             )
         }
     }
-}
-
-@Composable
-fun SettingsListItem(
-    title: String,
-    description: String,
-    onClick: () -> Unit,
-    iconRes: Int,
-    contentDesc: String
-) {
-    ListItem(
-        modifier = Modifier.clickable { onClick() },
-        headlineContent = { Text(title) },
-        supportingContent = { Text(description) },
-        leadingContent = {
-            Icon(painter = painterResource(iconRes), contentDescription = contentDesc)
-        }
-    )
 }
 
 @Composable
