@@ -80,7 +80,7 @@ fun PinSettingsScreen(
 
             ListItem(
                 modifier = Modifier.clickable {
-
+                    navController.safeNavigate(Route.SetFingerPrint.route)
                 },
                 headlineContent = { Text("Add fingerprint") },
                 supportingContent = { Text("Keep your diaries in secure by adding a fingerprint.") },

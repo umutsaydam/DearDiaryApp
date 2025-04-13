@@ -9,4 +9,5 @@ sealed class Route(
     data object AddDiary: Route("AddDiary")
     data object PinSettings: Route("PinSettings")
     data object SetPin: Route("SetPin")
+    data object SetFingerPrint: Route("SetFingerPrint")
 }
