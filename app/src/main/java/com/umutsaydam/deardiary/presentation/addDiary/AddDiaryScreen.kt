@@ -27,12 +27,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -53,13 +50,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.navigation.NavController
 import com.umutsaydam.deardiary.R
-import com.umutsaydam.deardiary.domain.DiaryTemplateEntity
 import com.umutsaydam.deardiary.domain.EmotionEntity
 import com.umutsaydam.deardiary.domain.emotionList
 import com.umutsaydam.deardiary.domain.templateList
 import com.umutsaydam.deardiary.presentation.addDiary.diaryMood.DiaryMoodItem
 import com.umutsaydam.deardiary.presentation.addDiary.diaryTemplate.DiaryTemplateDialog
-import com.umutsaydam.deardiary.presentation.addDiary.diaryTemplate.DiaryTemplateListLazyColumn
+import com.umutsaydam.deardiary.presentation.common.BaseScaffold
 import com.umutsaydam.deardiary.util.popBackStackOrIgnore
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -86,44 +82,32 @@ fun AddDiaryScreen(navController: NavController) {
 
     val screenWidthPx = with(density) { configuration.screenWidthDp.dp.toPx() }
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = { Text("Write a dairy") },
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            navController.popBackStackOrIgnore()
-                        },
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_arrow_back_filled),
-                            contentDescription = "Back to the previous screen"
-                        )
-                    }
-                },
-                actions = {
-                    IconButton(
-                        onClick = {
+    BaseScaffold(
+        title = "Write a diary",
+        topActions = {
+            IconButton(
+                onClick = {
 
-                        },
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_check_filled),
-                            contentDescription = "Save the dairy"
-                        )
-                    }
                 },
-                colors = TopAppBarDefaults.topAppBarColors().copy(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    actionIconContentColor = MaterialTheme.colorScheme.primary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_check_filled),
+                    contentDescription = "Save the dairy"
                 )
-            )
+            }
         },
-        containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
+        navigation = {
+            IconButton(
+                onClick = {
+                    navController.popBackStackOrIgnore()
+                }
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_arrow_back_filled),
+                    contentDescription = "Back to the previous screen"
+                )
+            }
+        }
     ) { paddingValues ->
 
         if (isDatePickerOpen) {
