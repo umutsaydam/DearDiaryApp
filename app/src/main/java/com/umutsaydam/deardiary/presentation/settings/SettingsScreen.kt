@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -65,6 +67,8 @@ fun SettingsScreen(navController: NavHostController) {
 
     var defaultTextStyle by remember { mutableIntStateOf(0) }
     var defaultFontFamily by remember { mutableIntStateOf(0) }
+
+    var isLogOutDialogOpen by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier
@@ -128,6 +132,17 @@ fun SettingsScreen(navController: NavHostController) {
                 )
             }
 
+            if (isLogOutDialogOpen) {
+                showLogoutDialog(
+                    onConfirm = {
+                        isLogOutDialogOpen = false
+                    },
+                    onDismissed = {
+                        isLogOutDialogOpen = false
+                    }
+                )
+            }
+
             ListItem(
                 modifier = Modifier.clickable {
                     isReminderTimeOpen = true
@@ -172,7 +187,7 @@ fun SettingsScreen(navController: NavHostController) {
 
             ListItem(
                 modifier = Modifier.clickable {
-
+                    isLogOutDialogOpen = true
                 },
                 headlineContent = { Text("Log out") },
                 supportingContent = { Text("Log out your account.") },
@@ -185,6 +200,57 @@ fun SettingsScreen(navController: NavHostController) {
             )
         }
     }
+}
+
+@Composable
+fun showLogoutDialog(
+    onConfirm: () -> Unit,
+    onDismissed: () -> Unit,
+) {
+    AlertDialog(
+        icon = {
+            Icon(
+                painter = painterResource(R.drawable.ic_log_out_outline),
+                contentDescription = "Log out"
+            )
+        },
+        title = {
+            Text(
+                "Log out"
+            )
+        },
+        text = {
+            Text(
+                "You are about to log out of your account, are you sure?"
+            )
+        },
+        onDismissRequest = { onDismissed() },
+        confirmButton = {
+            TextButton(
+                onClick = { onConfirm() }
+            ) {
+                Text(
+                    text = "Log out",
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(
+                modifier = Modifier.padding(end = 8.dp),
+                onClick = { onConfirm() }
+            ) {
+                Text(
+                    text = "Cancel",
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        },
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+        iconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        titleContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+        shape = AlertDialogDefaults.shape
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
