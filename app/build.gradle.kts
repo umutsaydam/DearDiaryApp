@@ -71,14 +71,23 @@ dependencies {
     // DataStore
     implementation(libs.androidx.datastore.preferences)
     // Retrofit2
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.logging.interceptor)
     // Navigation
     implementation(libs.androidx.navigation.compose)
     // Lottie Files
-    implementation("com.airbnb.android:lottie-compose:4.0.0")
+    implementation(libs.lottie.compose)
     // Biometric
     implementation(libs.androidx.biometric)
     // Splash Screen
     implementation(libs.androidx.core.splashscreen)
+    // Data Store
+    implementation(libs.androidx.datastore)
+    implementation(libs.androidx.security.crypto)
+}
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
