@@ -50,9 +50,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.navigation.NavController
 import com.umutsaydam.deardiary.R
-import com.umutsaydam.deardiary.domain.EmotionEntity
-import com.umutsaydam.deardiary.domain.emotionList
-import com.umutsaydam.deardiary.domain.templateList
+import com.umutsaydam.deardiary.domain.entity.EmotionEntity
+import com.umutsaydam.deardiary.domain.entity.emotionList
+import com.umutsaydam.deardiary.domain.entity.templateList
 import com.umutsaydam.deardiary.presentation.addDiary.diaryMood.DiaryMoodItem
 import com.umutsaydam.deardiary.presentation.addDiary.diaryTemplate.DiaryTemplateDialog
 import com.umutsaydam.deardiary.presentation.common.BaseScaffold
