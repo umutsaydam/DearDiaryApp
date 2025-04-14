@@ -61,8 +61,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     // Hilt Dagger
-    implementation("com.google.dagger:hilt-android:2.51.1")
-    ksp("com.google.dagger:hilt-compiler:2.51.1")
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
     // Room
     implementation(libs.androidx.room.runtime)

@@ -4,6 +4,7 @@ biometric = "1.4.0-alpha03"
 converterGson = "2.9.0"
 coreSplashscreen = "1.0.1"
 datastore = "1.1.4"
+hiltCompiler = "2.51.1"
 kotlin = "2.0.0"
 coreKtx = "1.15.0"
 hiltNavigationCompose = "1.2.0"
@@ -35,6 +36,8 @@ androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", versi
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "securityCrypto" }
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterGson" }
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltCompiler" }
+hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hiltCompiler" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
