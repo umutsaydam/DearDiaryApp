@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.umutsaydam.deardiary.domain.DiaryEntity
+import com.umutsaydam.deardiary.domain.entity.DiaryEntity
 
 @Composable
 fun DiaryListItem(

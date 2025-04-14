@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
 import com.umutsaydam.deardiary.R
-import com.umutsaydam.deardiary.domain.DiaryEntity
+import com.umutsaydam.deardiary.domain.entity.DiaryEntity
 import com.umutsaydam.deardiary.presentation.Dimens.CORNER_MEDIUM
 import com.umutsaydam.deardiary.presentation.common.BaseScaffold
 import com.umutsaydam.deardiary.presentation.common.MainNavigationAppBar

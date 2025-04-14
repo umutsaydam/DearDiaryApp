@@ -22,7 +22,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.umutsaydam.deardiary.R
-import com.umutsaydam.deardiary.domain.DiaryTemplateEntity
+import com.umutsaydam.deardiary.domain.entity.DiaryTemplateEntity
 
 @Composable
 fun DiaryTemplateListItem(

@@ -11,7 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.umutsaydam.deardiary.R
-import com.umutsaydam.deardiary.domain.DiaryTemplateEntity
+import com.umutsaydam.deardiary.domain.entity.DiaryTemplateEntity
 import com.umutsaydam.deardiary.presentation.common.BaseAlertDialog
 
 @Composable
