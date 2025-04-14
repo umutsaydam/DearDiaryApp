@@ -1,5 +1,6 @@
 package com.umutsaydam.deardiary.presentation.auth
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +20,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -35,21 +39,32 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.domain.AuthStateEnum
+import com.umutsaydam.deardiary.domain.Resource
+import com.umutsaydam.deardiary.presentation.common.LoadingCircular
 import com.umutsaydam.deardiary.presentation.navigation.Route
 import com.umutsaydam.deardiary.util.safeNavigate
 
 @Composable
-fun AuthScreen(navController: NavHostController) {
-    var authState by remember { mutableStateOf(AuthStateEnum.LOGIN) }
+fun AuthScreen(
+    navController: NavHostController,
+    authViewModel: AuthViewModel = hiltViewModel()
+) {
+    val userLoginResource by authViewModel.loginUserResource.collectAsState()
+    val uiMessageState by authViewModel.uiMessageState.collectAsState()
+    val authState by authViewModel.authState.collectAsState()
+    val isLoading by authViewModel.isLoading.collectAsState()
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordConfirm by remember { mutableStateOf("") }
-
+    val context = LocalContext.current
     val configuration = LocalConfiguration.current
     val screenWidth = configuration.screenWidthDp.dp
 
@@ -57,6 +72,23 @@ fun AuthScreen(navController: NavHostController) {
         screenWidth < 360.dp -> 0.85f
         screenWidth < 600.dp -> 0.6f
         else -> 0.4f
+    }
+
+    LaunchedEffect(uiMessageState) {
+        if (uiMessageState.isNotEmpty()) {
+            Toast.makeText(context, uiMessageState, Toast.LENGTH_SHORT).show()
+            authViewModel.clearUiMessageState()
+        }
+    }
+
+    LaunchedEffect(userLoginResource) {
+        if (userLoginResource is Resource.Success) {
+            navController.safeNavigate(Route.Diaries.route)
+        }
+    }
+
+    if (isLoading) {
+        LoadingCircular()
     }
 
     Column(
@@ -107,6 +139,7 @@ fun AuthScreen(navController: NavHostController) {
                     password = value
                 },
                 textInfo = "Password",
+                visualTransformation = PasswordVisualTransformation(),
                 leadIcon = R.drawable.ic_password_outline,
                 contentDesc = "Password icon",
                 keyboardOptions = KeyboardOptions(
@@ -123,6 +156,7 @@ fun AuthScreen(navController: NavHostController) {
                         passwordConfirm = value
                     },
                     textInfo = "Confirm",
+                    visualTransformation = PasswordVisualTransformation(),
                     leadIcon = R.drawable.ic_password_outline,
                     contentDesc = "Password confirm icon",
                     keyboardOptions = KeyboardOptions(
@@ -133,7 +167,20 @@ fun AuthScreen(navController: NavHostController) {
             }
 
             Button(
-                onClick = { navController.safeNavigate(Route.Diaries.route) },
+                onClick = {
+                    if (authState == AuthStateEnum.LOGIN) {
+                        authViewModel.loginUser(
+                            username.trim(),
+                            password.trim()
+                        )
+                    } else {
+                        authViewModel.createUser(
+                            username.trim(),
+                            password.trim(),
+                            passwordConfirm.trim()
+                        )
+                    }
+                },
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(if (authState == AuthStateEnum.LOGIN) "Sign in" else "Sign up")
@@ -152,11 +199,11 @@ fun AuthScreen(navController: NavHostController) {
             colorfulText = if (authState == AuthStateEnum.LOGIN) "Sign up now." else "Sign in now.",
             colorfulTextColor = MaterialTheme.colorScheme.primary,
             onClick = {
-                authState = if (authState == AuthStateEnum.LOGIN) {
-                    AuthStateEnum.REGISTER
+                if (authState == AuthStateEnum.LOGIN) {
+                    authViewModel.switchRegisterState()
                 } else {
                     passwordConfirm = ""
-                    AuthStateEnum.LOGIN
+                    authViewModel.switchLoginState()
                 }
             },
             style = MaterialTheme.typography.titleSmall
@@ -170,6 +217,7 @@ fun AuthOutlineText(
     text: String,
     onValueChange: (String) -> Unit,
     textInfo: String,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
     leadIcon: Int,
     contentDesc: String,
     keyboardOptions: KeyboardOptions
@@ -180,6 +228,7 @@ fun AuthOutlineText(
         label = { Text(textInfo) },
         placeholder = { Text(textInfo) },
         singleLine = true,
+        visualTransformation = visualTransformation,
         leadingIcon = {
             Icon(
                 painter = painterResource(leadIcon),

@@ -14,12 +14,12 @@ import com.umutsaydam.deardiary.presentation.settings.pinSettings.PinSettingsScr
 import com.umutsaydam.deardiary.presentation.settings.pinSettings.SetPinScreen
 
 @Composable
-fun MainNavHost() {
+fun MainNavHost(mainDestination: String) {
     val navController = rememberNavController()
 
     NavHost(
         navController = navController,
-        startDestination = Route.Auth.route
+        startDestination = mainDestination
     ) {
         composable(Route.Diaries.route) {
             DiariesScreen(navController)
