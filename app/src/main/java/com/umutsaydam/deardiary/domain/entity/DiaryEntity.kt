@@ -1,4 +1,4 @@
-package com.umutsaydam.deardiary.domain
+package com.umutsaydam.deardiary.domain.entity
 
 import java.util.Date
 import java.util.UUID

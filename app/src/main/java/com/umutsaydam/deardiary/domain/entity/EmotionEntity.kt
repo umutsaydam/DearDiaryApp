@@ -1,4 +1,4 @@
-package com.umutsaydam.deardiary.domain
+package com.umutsaydam.deardiary.domain.entity
 
 import com.umutsaydam.deardiary.R
 
