@@ -7,9 +7,9 @@ import com.umutsaydam.deardiary.domain.AuthStateEnum
 import com.umutsaydam.deardiary.domain.Resource
 import com.umutsaydam.deardiary.domain.entity.TokenEntity
 import com.umutsaydam.deardiary.domain.entity.UserEntity
-import com.umutsaydam.deardiary.domain.useCase.auth.UserCreateUseCase
-import com.umutsaydam.deardiary.domain.useCase.auth.UserLoginUseCase
-import com.umutsaydam.deardiary.domain.useCase.tokenUseCase.SaveTokenUseCase
+import com.umutsaydam.deardiary.domain.useCases.remote.auth.UserCreateUseCase
+import com.umutsaydam.deardiary.domain.useCases.remote.auth.UserLoginUseCase
+import com.umutsaydam.deardiary.domain.useCases.local.tokenUseCase.SaveTokenUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

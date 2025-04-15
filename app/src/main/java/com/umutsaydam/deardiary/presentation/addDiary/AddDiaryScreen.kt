@@ -1,6 +1,7 @@
 package com.umutsaydam.deardiary.presentation.addDiary
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -32,6 +33,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,12 +45,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.changedToUp
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.domain.entity.EmotionEntity
@@ -56,14 +61,21 @@ import com.umutsaydam.deardiary.domain.entity.templateList
 import com.umutsaydam.deardiary.presentation.addDiary.diaryMood.DiaryMoodItem
 import com.umutsaydam.deardiary.presentation.addDiary.diaryTemplate.DiaryTemplateDialog
 import com.umutsaydam.deardiary.presentation.common.BaseScaffold
+import com.umutsaydam.deardiary.presentation.common.LoadingCircular
+import com.umutsaydam.deardiary.presentation.navigation.Route
 import com.umutsaydam.deardiary.util.popBackStackOrIgnore
-import java.text.SimpleDateFormat
-import java.util.Locale
+import com.umutsaydam.deardiary.util.safeNavigate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddDiaryScreen(navController: NavController) {
-    var diaryText by remember { mutableStateOf("") }
+fun AddDiaryScreen(
+    navController: NavController,
+    addDiaryViewModel: AddDiaryViewModel = hiltViewModel()
+) {
+    val isLoading by addDiaryViewModel.isLoading.collectAsState()
+    val isTokenExpired by addDiaryViewModel.isTokenExpired.collectAsState()
+    val uiMessageState by addDiaryViewModel.uiMessageState.collectAsState()
+    val diaryText by addDiaryViewModel.diaryContent.collectAsState()
     var isTemplateDialogOpen by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState(
         selectableDates = object : SelectableDates {
@@ -75,19 +87,32 @@ fun AddDiaryScreen(navController: NavController) {
     var isDatePickerOpen by remember { mutableStateOf(false) }
     var isMoodDialogOpen by remember { mutableStateOf(false) }
     var isLongPressingMoodButton by remember { mutableStateOf(false) }
-    var selectedIndex by remember { mutableStateOf(-1) }
-
+    val selectedIndex by addDiaryViewModel.diaryEmotion.collectAsState()
+    val context = LocalContext.current
     val configuration = LocalConfiguration.current
     val density = LocalDensity.current
-
     val screenWidthPx = with(density) { configuration.screenWidthDp.dp.toPx() }
+
+    val selectedDate by addDiaryViewModel.selectedDateMillis.collectAsState()
+    LaunchedEffect(isTokenExpired) {
+        if (isTokenExpired) {
+            navController.safeNavigate(Route.Auth.route)
+        }
+    }
+
+    LaunchedEffect(uiMessageState) {
+        if (uiMessageState.isNotEmpty()) {
+            Toast.makeText(context, uiMessageState, Toast.LENGTH_SHORT).show()
+            addDiaryViewModel.clearUiMessageState()
+        }
+    }
 
     BaseScaffold(
         title = "Write a diary",
         topActions = {
             IconButton(
                 onClick = {
-
+                    addDiaryViewModel.saveDiaryServer()
                 },
             ) {
                 Icon(
@@ -109,12 +134,15 @@ fun AddDiaryScreen(navController: NavController) {
             }
         }
     ) { paddingValues ->
+        if (isLoading) {
+            LoadingCircular()
+        }
 
         if (isDatePickerOpen) {
             DairyDatePickerDialog(
                 datePickerState = datePickerState,
                 onSelectedDate = { selectedDate ->
-
+                    addDiaryViewModel.updateSelectedDate(selectedDate)
                 },
                 onDismissed = {
                     isDatePickerOpen = false
@@ -126,7 +154,10 @@ fun AddDiaryScreen(navController: NavController) {
             DiaryTemplateDialog(
                 templateList = templateList,
                 onTemplateSelected = { selectedTemplate ->
-
+                    addDiaryViewModel.updateDiaryContent(
+                        selectedTemplate.templateDiaryContents + "\n" + diaryText
+                    )
+                    isTemplateDialogOpen = false
                 },
                 onDismissed = { isTemplateDialogOpen = false }
             )
@@ -158,7 +189,7 @@ fun AddDiaryScreen(navController: NavController) {
                     )
 
                     Text(
-                        text = "10 April 2025",
+                        text = addDiaryViewModel.formatForSelectedDate(selectedDate),
                         textAlign = TextAlign.Center
                     )
                 }
@@ -169,65 +200,70 @@ fun AddDiaryScreen(navController: NavController) {
                     modifier = Modifier
                         .fillParentMaxSize(),
                     value = diaryText,
-                    onValueChange = { diaryText = it }
+                    onValueChange = { addDiaryViewModel.updateDiaryContent(it) }
                 )
             }
         }
+
 
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .consumeWindowInsets(paddingValues)
                 .imePadding()
-                .pointerInput(isMoodDialogOpen) {
-                    if (isMoodDialogOpen) {
-                        awaitPointerEventScope {
-                            while (true) {
-                                val event = awaitPointerEvent()
-                                val pos = event.changes.first().position
-                                val popupWidthPx = 300.dp.toPx()
-                                val popupStartX = (screenWidthPx - popupWidthPx) / 2f
-                                val localX = pos.x - popupStartX
-                                val spacing = 4.dp.toPx()
-                                val totalSpacing = spacing * (emotionList.size - 1)
-                                val availableWidth = 300.dp.toPx() - totalSpacing
-                                val itemWidth = availableWidth / emotionList.size
-                                val fullItemWidth = itemWidth + spacing
+        ) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .pointerInput(isMoodDialogOpen) {
+                        if (isMoodDialogOpen) {
+                            awaitPointerEventScope {
+                                while (true) {
+                                    val event = awaitPointerEvent()
+                                    val pos = event.changes.first().position
+                                    val popupWidthPx = 300.dp.toPx()
+                                    val popupStartX = (screenWidthPx - popupWidthPx) / 2f
+                                    val localX = pos.x - popupStartX
+                                    val spacing = 4.dp.toPx()
+                                    val totalSpacing = spacing * (emotionList.size - 1)
+                                    val availableWidth = 300.dp.toPx() - totalSpacing
+                                    val itemWidth = availableWidth / emotionList.size
+                                    val fullItemWidth = itemWidth + spacing
 
-                                val index = (localX / fullItemWidth)
-                                    .toInt()
-                                    .coerceIn(0, emotionList.lastIndex)
+                                    val index = (localX / fullItemWidth)
+                                        .toInt()
+                                        .coerceIn(0, emotionList.lastIndex)
 
+                                    addDiaryViewModel.updateDiaryEmotion(index)
 
-                                selectedIndex = index
-
-                                if (event.changes
-                                        .first()
-                                        .changedToUp()
-                                ) {
-                                    emotionList[index]
-                                    isMoodDialogOpen = false
-                                    isLongPressingMoodButton = false
-                                    break
+                                    if (event.changes
+                                            .first()
+                                            .changedToUp()
+                                    ) {
+                                        emotionList[index]
+                                        isMoodDialogOpen = false
+                                        isLongPressingMoodButton = false
+                                        break
+                                    }
                                 }
                             }
                         }
+                    },
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                BottomXRMenu(
+                    onTemplateDialogOpen = { isTemplateDialogOpen = true },
+                    onLongPress = {
+                        isMoodDialogOpen = true
+                        isLongPressingMoodButton = true
+                        Log.i("R/T", "long pressed $isMoodDialogOpen && $isLongPressingMoodButton")
+                    },
+                    onDismissed = {
+                        isMoodDialogOpen = false
+                        isLongPressingMoodButton = false
                     }
-                },
-            contentAlignment = Alignment.BottomCenter
-        ) {
-            BottomXRMenu(
-                onTemplateDialogOpen = { isTemplateDialogOpen = true },
-                onLongPress = {
-                    isMoodDialogOpen = true
-                    isLongPressingMoodButton = true
-                    Log.i("R/T", "long pressed $isMoodDialogOpen && $isLongPressingMoodButton")
-                },
-                onDismissed = {
-                    isMoodDialogOpen = false
-                    isLongPressingMoodButton = false
-                }
-            )
+                )
+            }
         }
     }
 }
@@ -238,32 +274,39 @@ fun DairyMoodPopup(
     onDismissed: () -> Unit,
     selectedIndex: Int
 ) {
-    Popup(
-        alignment = Alignment.BottomCenter,
-        onDismissRequest = { onDismissed() },
-        offset = IntOffset(0, -235)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .imePadding(),
+        contentAlignment = Alignment.BottomCenter
     ) {
-        Box(
-            modifier = Modifier
-                .width(300.dp)
-                .height(60.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(MaterialTheme.colorScheme.surfaceContainer),
-            contentAlignment = Alignment.Center
+        Popup(
+            alignment = Alignment.BottomCenter,
+            onDismissRequest = { onDismissed() },
+            offset = IntOffset(0, -235)
         ) {
-            LazyRow(
-                modifier = Modifier.fillMaxSize(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(
-                    space = 4.dp,
-                    alignment = Alignment.CenterHorizontally
-                )
+            Box(
+                modifier = Modifier
+                    .width(300.dp)
+                    .height(60.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(MaterialTheme.colorScheme.surfaceContainer),
+                contentAlignment = Alignment.Center
             ) {
-                items(count = emotionList.size, key = { it }) { index ->
-                    DiaryMoodItem(
-                        emotionEntity = emotionList[index],
-                        isSelected = selectedIndex == index
+                LazyRow(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(
+                        space = 4.dp,
+                        alignment = Alignment.CenterHorizontally
                     )
+                ) {
+                    items(count = emotionList.size, key = { it }) { index ->
+                        DiaryMoodItem(
+                            emotionEntity = emotionList[index],
+                            isSelected = selectedIndex == index
+                        )
+                    }
                 }
             }
         }
@@ -275,7 +318,7 @@ fun DairyMoodPopup(
 fun DairyDatePickerDialog(
     modifier: Modifier = Modifier,
     datePickerState: DatePickerState,
-    onSelectedDate: (String) -> Unit,
+    onSelectedDate: (Long) -> Unit,
     onDismissed: () -> Unit,
 ) {
     DatePickerDialog(
@@ -284,11 +327,9 @@ fun DairyDatePickerDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    val dateFormat = SimpleDateFormat("dd-MM-yyy", Locale.getDefault())
-                    val selectedDate = datePickerState.selectedDateMillis?.let {
-                        dateFormat.format(it)
-                    } ?: ""
-                    onSelectedDate(selectedDate)
+                    datePickerState.selectedDateMillis?.let {
+                        onSelectedDate(it)
+                    }
                     onDismissed()
                 }
             ) {

@@ -1,4 +1,4 @@
-package com.umutsaydam.deardiary.domain.useCase.tokenUseCase
+package com.umutsaydam.deardiary.domain.useCases.local.tokenUseCase
 
 import com.umutsaydam.deardiary.domain.manager.TokenManager
 import javax.inject.Inject

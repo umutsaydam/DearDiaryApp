@@ -1,4 +1,4 @@
-package com.umutsaydam.deardiary.domain.useCase.auth
+package com.umutsaydam.deardiary.domain.useCases.remote.auth
 
 import com.umutsaydam.deardiary.domain.Resource
 import com.umutsaydam.deardiary.domain.entity.TokenEntity

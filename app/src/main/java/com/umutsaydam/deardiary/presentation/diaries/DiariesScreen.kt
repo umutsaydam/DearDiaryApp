@@ -1,5 +1,7 @@
 package com.umutsaydam.deardiary.presentation.diaries
 
+import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -8,22 +10,58 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.domain.entity.DiaryEntity
 import com.umutsaydam.deardiary.presentation.Dimens.CORNER_MEDIUM
+import com.umutsaydam.deardiary.presentation.common.BaseAlertDialog
 import com.umutsaydam.deardiary.presentation.common.BaseScaffold
+import com.umutsaydam.deardiary.presentation.common.LoadingCircular
 import com.umutsaydam.deardiary.presentation.common.MainNavigationAppBar
 import com.umutsaydam.deardiary.presentation.navigation.Route
 import com.umutsaydam.deardiary.util.safeNavigate
-import java.util.Date
-import java.util.UUID
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 @Composable
-fun DiariesScreen(navController: NavHostController) {
+fun DiariesScreen(
+    navController: NavHostController,
+    diariesViewModel: DiariesViewModel = hiltViewModel()
+) {
+    val isLoading by diariesViewModel.isLoading.collectAsState()
+    val diariesList by diariesViewModel.diariesList.collectAsState()
+    val isTokenExpired by diariesViewModel.isTokenExpired.collectAsState()
+    val uiMessageState by diariesViewModel.uiMessageState.collectAsState()
+    val context = LocalContext.current
+    var isDeleteDialogOpen by remember { mutableStateOf(false) }
+    var selectedDiaryEntity: DiaryEntity? by remember { mutableStateOf(null) }
+
+    LaunchedEffect(isTokenExpired) {
+        if (isTokenExpired) {
+            navController.safeNavigate(Route.Auth.route)
+        }
+    }
+
+    LaunchedEffect(uiMessageState) {
+        if (uiMessageState.isNotEmpty()) {
+            Toast.makeText(context, uiMessageState, Toast.LENGTH_SHORT).show()
+            diariesViewModel.clearUiMessageState()
+        }
+    }
+
     BaseScaffold(
         title = "Diaries",
         topActions = {
@@ -42,42 +80,56 @@ fun DiariesScreen(navController: NavHostController) {
         fabContent = {
             AddDiaryFab { navController.safeNavigate(Route.AddDiary.route) }
         },
-        bottomBar = {  MainNavigationAppBar(navController) }
+        bottomBar = { MainNavigationAppBar(navController) }
     ) { paddingValues ->
-        val date = Date()
-        val list = listOf(
-            DiaryEntity(
-                UUID.randomUUID(),
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus id sollicitudin leo. Sed eget justo id sapien accumsan mattis quis nec sapien. Suspendisse commodo sed arcu non volutpat. Integer nulla justo, varius sit amet justo eget, varius molestie purus. Duis in imperdiet diam. Donec eget velit est. Fusce ipsum lacus, semper eget eros vitae, dapibus suscipit lectus. Vestibulum tempus suscipit tellus et elementum. Pellentesque faucibus purus mauris, at dignissim enim aliquet vel.",
-                date,
-                0
-            ),
-            DiaryEntity(
-                UUID.randomUUID(),
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus id sollicitudin leo. Sed eget justo id sapien accumsan mattis quis nec sapien. Suspendisse commodo sed arcu non volutpat. Integer nulla justo, varius sit amet justo eget, varius molestie purus. Duis in imperdiet diam. Donec eget velit est. Fusce ipsum lacus, semper eget eros vitae, dapibus suscipit lectus. Vestibulum tempus suscipit tellus et elementum. Pellentesque faucibus purus mauris, at dignissim enim aliquet vel.",
-                date,
-                1
-            ),
-            DiaryEntity(
-                UUID.randomUUID(),
-                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus id sollicitudin leo. Sed eget justo id sapien accumsan mattis quis nec sapien. Suspendisse commodo sed arcu non volutpat. Integer nulla justo, varius sit amet justo eget, varius molestie purus. Duis in imperdiet diam. Donec eget velit est. Fusce ipsum lacus, semper eget eros vitae, dapibus suscipit lectus. Vestibulum tempus suscipit tellus et elementum. Pellentesque faucibus purus mauris, at dignissim enim aliquet vel.",
-                date,
-                2
-            ),
-            DiaryEntity(UUID.randomUUID(), "Content3", date, 3),
-            DiaryEntity(UUID.randomUUID(), "Content4", date, 4),
-            DiaryEntity(UUID.randomUUID(), "Content5", date, 5),
-            DiaryEntity(UUID.randomUUID(), "Content6", date, 6),
-            DiaryEntity(UUID.randomUUID(), "Content7", date, 7),
-            DiaryEntity(UUID.randomUUID(), "Content8", date, 8)
-        )
+        if (isLoading) {
+            LoadingCircular()
+        }
+
+        if (isDeleteDialogOpen) {
+            BaseAlertDialog(
+                icon = R.drawable.ic_delete_outline,
+                contentDesc = "Delete icon",
+                title = "Delete Diary",
+                text = { Text("Diary is deleting. Are you sure?") },
+                onDismissed = { isDeleteDialogOpen = false },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            selectedDiaryEntity?.let {
+                                diariesViewModel.deleteDiaryById(it)
+                                isDeleteDialogOpen = false
+                            }
+                        }
+                    ) {
+                        Text("Yes")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = { isDeleteDialogOpen = false }
+                    ) {
+                        Text("Cancel")
+                    }
+                }
+            )
+        }
 
         DiaryListLazyRow(
             modifier = Modifier.padding(
                 top = paddingValues.calculateTopPadding(),
                 bottom = paddingValues.calculateBottomPadding()
             ),
-            diaryEntityList = list
+            diaryEntityList = diariesList,
+            onClick = { diaryEntity ->
+                val json = Json.encodeToString(diaryEntity)
+                val encodedJson = Uri.encode(json).replace("+", "%20")
+                navController.navigate("ReadDiary?diaryJson=$encodedJson")
+            },
+            onLongClick = { diaryEntity ->
+                selectedDiaryEntity = diaryEntity
+                isDeleteDialogOpen = true
+            }
         )
     }
 }

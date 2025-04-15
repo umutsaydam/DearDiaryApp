@@ -3,8 +3,8 @@ package com.umutsaydam.deardiary
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.umutsaydam.deardiary.domain.Resource
-import com.umutsaydam.deardiary.domain.useCase.auth.TokenReusable
-import com.umutsaydam.deardiary.domain.useCase.tokenUseCase.GetTokenUseCase
+import com.umutsaydam.deardiary.domain.useCases.remote.auth.TokenReusable
+import com.umutsaydam.deardiary.domain.useCases.local.tokenUseCase.GetTokenUseCase
 import com.umutsaydam.deardiary.presentation.navigation.Route
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

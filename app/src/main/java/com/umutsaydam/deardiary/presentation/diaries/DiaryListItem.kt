@@ -1,16 +1,20 @@
 package com.umutsaydam.deardiary.presentation.diaries
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -19,18 +23,32 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.umutsaydam.deardiary.domain.entity.DiaryEntity
+import com.umutsaydam.deardiary.domain.entity.emotionList
+import com.umutsaydam.deardiary.util.DateFormatter
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DiaryListItem(
     modifier: Modifier = Modifier,
     index: Int,
-    diaryEntity: DiaryEntity
+    diaryEntity: DiaryEntity,
+    onClick: (DiaryEntity) -> Unit,
+    onLongClick: (DiaryEntity) -> Unit
 ) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(220.dp),
+            .height(220.dp)
+            .combinedClickable(
+                onClick = { onClick(diaryEntity) },
+                onLongClick = {
+                    onLongClick(diaryEntity)
+                }
+            ),
         verticalAlignment = Alignment.Top,
         horizontalArrangement = Arrangement.Start
     ) {
@@ -84,7 +102,7 @@ fun TimeLineContent(diaryEntity: DiaryEntity) {
         modifier = Modifier.padding(end = 5.dp)
     ) {
         Text(
-            text = "10 April 2025",
+            text = DateFormatter.formatForUi(diaryEntity.diaryDate!!),
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onSurface
         )
@@ -98,11 +116,21 @@ fun TimeLineContent(diaryEntity: DiaryEntity) {
             overflow = TextOverflow.Ellipsis
         )
 
-        Text(
+        ShowMoodByIndex(
             modifier = Modifier.padding(top = 15.dp),
-            text = "\uD83D\uDE02",
-            style = MaterialTheme.typography.headlineLarge,
-            color = MaterialTheme.colorScheme.onSurface
+            diaryEmotion = diaryEntity.diaryEmotion!!
         )
     }
+}
+
+@Composable
+fun ShowMoodByIndex(modifier: Modifier = Modifier, diaryEmotion: Int) {
+    val composition by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(emotionList[diaryEmotion].emotionSource))
+
+    LottieAnimation(
+        modifier = modifier
+            .size(36.dp),
+        composition = composition,
+        isPlaying = false
+    )
 }

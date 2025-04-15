@@ -1,7 +1,10 @@
 package com.umutsaydam.deardiary.presentation.navigation
 
+import androidx.navigation.NavArgument
+
 sealed class Route(
-    val route: String
+    val route: String,
+    val arguments: NavArgument? =  null
 ) {
     data object Insights: Route("Insights")
     data object Diaries: Route("Diaries")
@@ -11,4 +14,5 @@ sealed class Route(
     data object SetPin: Route("SetPin")
     data object SetFingerPrint: Route("SetFingerPrint")
     data object Auth: Route("Auth")
+    data object ReadDiary: Route("ReadDiary?diaryJson={diaryJson}")
 }

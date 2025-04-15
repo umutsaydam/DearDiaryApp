@@ -9,14 +9,21 @@ import com.umutsaydam.deardiary.domain.entity.DiaryEntity
 @Composable
 fun DiaryListLazyRow(
     modifier: Modifier = Modifier,
-    diaryEntityList: List<DiaryEntity>
+    diaryEntityList: List<DiaryEntity>,
+    onClick: (DiaryEntity) -> Unit,
+    onLongClick: (DiaryEntity) -> Unit
 ) {
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
     ) {
-        items(count = diaryEntityList.size, key = { it }) { index ->
-            DiaryListItem(index = index, diaryEntity = diaryEntityList[index])
+        items(count = diaryEntityList.size, key = { diaryEntityList[it].diaryId }) { index ->
+            DiaryListItem(
+                index = index,
+                diaryEntity = diaryEntityList[index],
+                onClick = { entity -> onClick(entity) },
+                onLongClick = { entity -> onLongClick(entity) }
+            )
         }
     }
 }
