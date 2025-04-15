@@ -1,7 +1,9 @@
 package com.umutsaydam.deardiary.di
 
 import android.content.Context
+import androidx.room.Room
 import com.umutsaydam.deardiary.data.local.TokenManagerImpl
+import com.umutsaydam.deardiary.data.local.db.DearDiaryDB
 import com.umutsaydam.deardiary.data.remote.DearDiaryApiService
 import com.umutsaydam.deardiary.data.remote.repository.UserRepositoryImpl
 import com.umutsaydam.deardiary.domain.manager.TokenManager
@@ -27,4 +29,22 @@ object AppModule {
     fun provideTokenManager(
         @ApplicationContext context: Context
     ): TokenManager = TokenManagerImpl(context)
+
+    @Provides
+    @Singleton
+    fun provideDearDiaryDatabase(
+        application: Application
+    ): DearDiaryDB {
+        return Room.databaseBuilder(
+            context = application.applicationContext,
+            klass = DearDiaryDB::class.java,
+            name = "DearDiaryDB"
+        ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideDiaryDao(
+        dearDiaryDB: DearDiaryDB
+    ): DiaryDao = dearDiaryDB.diaryDao
 }
