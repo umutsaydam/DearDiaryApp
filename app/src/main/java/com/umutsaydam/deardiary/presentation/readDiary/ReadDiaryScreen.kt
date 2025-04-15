@@ -1,10 +1,7 @@
 package com.umutsaydam.deardiary.presentation.readDiary
 
 import android.widget.Toast
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.BasicTextField
@@ -14,28 +11,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.changedToUp
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.domain.entity.DiaryEntity
-import com.umutsaydam.deardiary.domain.entity.emotionList
-import com.umutsaydam.deardiary.domain.entity.templateList
-import com.umutsaydam.deardiary.presentation.addDiary.BottomXRMenu
-import com.umutsaydam.deardiary.presentation.addDiary.DairyMoodPopup
-import com.umutsaydam.deardiary.presentation.addDiary.diaryTemplate.DiaryTemplateDialog
 import com.umutsaydam.deardiary.presentation.common.BaseScaffold
+import com.umutsaydam.deardiary.presentation.common.BottomXRMenuWithGesture
 import com.umutsaydam.deardiary.presentation.common.LoadingCircular
 import com.umutsaydam.deardiary.presentation.navigation.Route
 import com.umutsaydam.deardiary.util.DateFormatter
@@ -54,17 +38,10 @@ fun ReadDiaryScreen(
     diary?.let {
         val isLoading by readDiaryViewModel.isLoading.collectAsState()
         val isTokenExpired by readDiaryViewModel.isTokenExpired.collectAsState()
-        var isTemplateDialogOpen by remember { mutableStateOf(false) }
-        var isMoodDialogOpen by remember { mutableStateOf(false) }
-        var isLongPressingMoodButton by remember { mutableStateOf(false) }
         val uiMessageState by readDiaryViewModel.uiMessageState.collectAsState()
         val selectedIndex by readDiaryViewModel.diaryEmotion.collectAsState()
         val diaryContent by readDiaryViewModel.diaryContent.collectAsState()
-
         val context = LocalContext.current
-        val configuration = LocalConfiguration.current
-        val density = LocalDensity.current
-        val screenWidthPx = with(density) { configuration.screenWidthDp.dp.toPx() }
 
         LaunchedEffect(isTokenExpired) {
             if (isTokenExpired) {
@@ -108,28 +85,6 @@ fun ReadDiaryScreen(
                 LoadingCircular()
             }
 
-            if (isTemplateDialogOpen) {
-                DiaryTemplateDialog(
-                    templateList = templateList,
-                    onTemplateSelected = { selectedTemplate ->
-                        readDiaryViewModel.addTemplate(selectedTemplate.templateDiaryContents)
-                        isTemplateDialogOpen = false
-                    },
-                    onDismissed = { isTemplateDialogOpen = false }
-                )
-            }
-
-            if (isMoodDialogOpen && isLongPressingMoodButton) {
-                DairyMoodPopup(
-                    emotionList = emotionList,
-                    selectedIndex = selectedIndex!!,
-                    onDismissed = {
-                        isMoodDialogOpen = false
-                        isLongPressingMoodButton = false
-                    }
-                )
-            }
-
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -145,64 +100,16 @@ fun ReadDiaryScreen(
                 }
             }
 
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .consumeWindowInsets(paddingValues)
-                    .imePadding()
-            ) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .pointerInput(isMoodDialogOpen) {
-                            if (isMoodDialogOpen) {
-                                awaitPointerEventScope {
-                                    while (true) {
-                                        val event = awaitPointerEvent()
-                                        val pos = event.changes.first().position
-                                        val popupWidthPx = 300.dp.toPx()
-                                        val popupStartX = (screenWidthPx - popupWidthPx) / 2f
-                                        val localX = pos.x - popupStartX
-                                        val spacing = 4.dp.toPx()
-                                        val totalSpacing = spacing * (emotionList.size - 1)
-                                        val availableWidth = 300.dp.toPx() - totalSpacing
-                                        val itemWidth = availableWidth / emotionList.size
-                                        val fullItemWidth = itemWidth + spacing
-
-                                        val index = (localX / fullItemWidth)
-                                            .toInt()
-                                            .coerceIn(0, emotionList.lastIndex)
-
-                                        readDiaryViewModel.updateDiaryEmotion(index)
-
-                                        if (event.changes
-                                                .first()
-                                                .changedToUp()
-                                        ) {
-                                            emotionList[index]
-                                            isMoodDialogOpen = false
-                                            isLongPressingMoodButton = false
-                                            break
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                    contentAlignment = Alignment.BottomCenter
-                ) {
-                    BottomXRMenu(
-                        onTemplateDialogOpen = { isTemplateDialogOpen = true },
-                        onLongPress = {
-                            isMoodDialogOpen = true
-                            isLongPressingMoodButton = true
-                        },
-                        onDismissed = {
-                            isMoodDialogOpen = false
-                            isLongPressingMoodButton = false
-                        }
-                    )
+            BottomXRMenuWithGesture(
+             selectedIndex = selectedIndex!!,
+                paddingValues = paddingValues,
+                onMoodSelected = { mood ->
+                    readDiaryViewModel.updateDiaryEmotion(mood)
+                },
+                onTemplateSelected = { templateDiaryContents ->
+                    readDiaryViewModel.addTemplate(templateDiaryContents)
                 }
-            }
+            )
         }
     }
 }
