@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
+    id("kotlinx-serialization")
 }
 
 android {
@@ -85,6 +86,8 @@ dependencies {
     // Data Store
     implementation(libs.androidx.datastore)
     implementation(libs.androidx.security.crypto)
+    // Serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 }
 java {
     toolchain {
