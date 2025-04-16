@@ -3,7 +3,7 @@ package com.umutsaydam.deardiary.di
 import android.app.Application
 import android.content.Context
 import androidx.room.Room
-import com.umutsaydam.deardiary.data.local.TokenManagerImpl
+import com.umutsaydam.deardiary.data.local.dataStore.TokenManagerImpl
 import com.umutsaydam.deardiary.data.local.db.DearDiaryDB
 import com.umutsaydam.deardiary.data.local.db.DiaryDao
 import com.umutsaydam.deardiary.data.notification.ReminderSchedulerImpl

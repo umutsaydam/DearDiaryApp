@@ -1,4 +1,4 @@
-package com.umutsaydam.deardiary.data.local
+package com.umutsaydam.deardiary.data.local.dataStore
 
 import android.content.Context
 import androidx.datastore.core.DataStore
