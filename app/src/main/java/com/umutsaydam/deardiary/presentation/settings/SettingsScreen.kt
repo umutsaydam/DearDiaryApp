@@ -25,9 +25,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.presentation.common.BaseAlertDialog
@@ -35,6 +37,7 @@ import com.umutsaydam.deardiary.presentation.common.BaseListItem
 import com.umutsaydam.deardiary.presentation.common.BaseScaffold
 import com.umutsaydam.deardiary.presentation.common.MainNavigationAppBar
 import com.umutsaydam.deardiary.presentation.navigation.Route
+import com.umutsaydam.deardiary.presentation.reminder.ReminderViewModel
 import com.umutsaydam.deardiary.presentation.settings.fontSettings.FontSettingsDialog
 import com.umutsaydam.deardiary.util.safeNavigate
 import java.text.SimpleDateFormat
@@ -45,7 +48,11 @@ import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(navController: NavHostController) {
+fun SettingsScreen(
+    navController: NavHostController,
+    reminderViewModel: ReminderViewModel = hiltViewModel()
+) {
+    val context = LocalContext.current
     var isReminderTimeOpen by remember { mutableStateOf(false) }
     val calendar = Calendar.getInstance()
     val timePickerState = rememberTimePickerState(
@@ -78,8 +85,8 @@ fun SettingsScreen(navController: NavHostController) {
             if (isReminderTimeOpen) {
                 ReminderTimePicker(
                     timePickerState = timePickerState,
-                    onSelected = { time ->
-
+                    onSelected = { hour, minute ->
+                        reminderViewModel.scheduleReminder(context, hour, minute)
                     },
                     onDismissed = { isReminderTimeOpen = false }
                 )
@@ -172,7 +179,7 @@ fun showLogoutDialog(
 @Composable
 fun ReminderTimePicker(
     timePickerState: TimePickerState,
-    onSelected: (String) -> Unit,
+    onSelected: (Int, Int) -> Unit,
     onDismissed: () -> Unit
 ) {
     Dialog(
@@ -218,21 +225,7 @@ fun ReminderTimePicker(
                 TextButton(
                     modifier = Modifier.padding(end = 8.dp),
                     onClick = {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            val formatter = DateTimeFormatter.ofPattern("HH:mm")
-                            val timeSelected =
-                                LocalTime.of(timePickerState.hour, timePickerState.minute)
-                                    .format(formatter)
-                            onSelected(timeSelected)
-                        } else {
-                            val calendar = Calendar.getInstance()
-                            calendar.set(Calendar.HOUR_OF_DAY, timePickerState.hour)
-                            calendar.set(Calendar.MINUTE, timePickerState.minute)
-
-                            val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
-                            val timeSelected = formatter.format(calendar.time)
-                            onSelected(timeSelected)
-                        }
+                        onSelected(timePickerState.hour, timePickerState.minute)
                         onDismissed()
                     }
                 ) {
