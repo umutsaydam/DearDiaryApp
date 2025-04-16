@@ -14,7 +14,8 @@ fun BaseListItem(
     description: String,
     onClick: () -> Unit,
     iconRes: Int,
-    contentDesc: String
+    contentDesc: String,
+    trailingContent: @Composable () -> Unit = {}
 ) {
     ListItem(
         modifier = Modifier.clickable { onClick() },
@@ -22,6 +23,7 @@ fun BaseListItem(
         supportingContent = { Text(description) },
         leadingContent = {
             Icon(painter = painterResource(iconRes), contentDescription = contentDesc)
-        }
+        },
+        trailingContent = trailingContent
     )
 }

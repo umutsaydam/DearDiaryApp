@@ -1,6 +1,5 @@
 package com.umutsaydam.deardiary.presentation.settings
 
-import android.os.Build
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -12,12 +11,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimeInput
 import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -40,11 +42,7 @@ import com.umutsaydam.deardiary.presentation.navigation.Route
 import com.umutsaydam.deardiary.presentation.reminder.ReminderViewModel
 import com.umutsaydam.deardiary.presentation.settings.fontSettings.FontSettingsDialog
 import com.umutsaydam.deardiary.util.safeNavigate
-import java.text.SimpleDateFormat
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 import java.util.Calendar
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,6 +51,7 @@ fun SettingsScreen(
     reminderViewModel: ReminderViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
+    val isReminderEnable by reminderViewModel.isReminderEnabled.collectAsState(initial = false)
     var isReminderTimeOpen by remember { mutableStateOf(false) }
     val calendar = Calendar.getInstance()
     val timePickerState = rememberTimePickerState(
@@ -87,8 +86,11 @@ fun SettingsScreen(
                     timePickerState = timePickerState,
                     onSelected = { hour, minute ->
                         reminderViewModel.scheduleReminder(context, hour, minute)
+                        reminderViewModel.setReminder(true)
                     },
-                    onDismissed = { isReminderTimeOpen = false }
+                    onDismissed = {
+                        isReminderTimeOpen = false
+                    }
                 )
             }
 
@@ -117,7 +119,26 @@ fun SettingsScreen(
                 description = "Set daily reminders.",
                 onClick = { isReminderTimeOpen = true },
                 iconRes = R.drawable.ic_notification_outline,
-                contentDesc = "Daily Reminder icon"
+                contentDesc = "Daily Reminder icon",
+                trailingContent = {
+                    Switch(
+                        checked = isReminderEnable,
+                        onCheckedChange = {
+                            if (!isReminderEnable) {
+                                isReminderTimeOpen = true
+                            } else {
+                                reminderViewModel.setReminder(false)
+                                reminderViewModel.cancelReminder(context)
+                            }
+                        },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = MaterialTheme.colorScheme.primary,
+                            checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                            uncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+                        )
+                    )
+                }
             )
 
             BaseListItem(

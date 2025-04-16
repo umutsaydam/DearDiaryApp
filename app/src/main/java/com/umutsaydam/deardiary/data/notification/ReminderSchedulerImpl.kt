@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import androidx.work.Worker
 import androidx.work.workDataOf
 import com.umutsaydam.deardiary.domain.notification.ReminderScheduler
 import com.umutsaydam.deardiary.util.ReminderWorker
@@ -48,8 +49,13 @@ class ReminderSchedulerImpl @Inject constructor() : ReminderScheduler {
         val workRequest = OneTimeWorkRequestBuilder<ReminderWorker>()
             .setInitialDelay(delayMillis, TimeUnit.MILLISECONDS)
             .setInputData(workDataOf("message" to message))
+            .addTag("daily_reminder")
             .build()
 
         WorkManager.getInstance(context).enqueue(workRequest)
+    }
+
+    override fun cancelReminder(context: Context) {
+        WorkManager.getInstance(context).cancelAllWorkByTag("daily_reminder")
     }
 }
