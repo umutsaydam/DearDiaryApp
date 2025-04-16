@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -14,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.umutsaydam.deardiary.R
@@ -33,9 +35,11 @@ fun ReadDiaryScreen(
     readDiaryViewModel: ReadDiaryViewModel = hiltViewModel()
 ) {
     val diary by readDiaryViewModel.diary.collectAsState()
+    val defaultFont = readDiaryViewModel.defaultFont.collectAsState().value
+    val defaultSize = readDiaryViewModel.defaultSize.collectAsState().value
     LaunchedEffect(Unit) { readDiaryViewModel.setDiary(diaryEntity) }
 
-    diary?.let {
+    if (diary != null && defaultFont != null && defaultSize != null) {
         val isLoading by readDiaryViewModel.isLoading.collectAsState()
         val isTokenExpired by readDiaryViewModel.isTokenExpired.collectAsState()
         val uiMessageState by readDiaryViewModel.uiMessageState.collectAsState()
@@ -57,7 +61,7 @@ fun ReadDiaryScreen(
         }
 
         BaseScaffold(
-            title = DateFormatter.formatForUi(it.diaryDate!!),
+            title = DateFormatter.formatForUi(diary!!.diaryDate!!),
             topActions = {
                 IconButton(
                     onClick = { readDiaryViewModel.update() },
@@ -95,13 +99,16 @@ fun ReadDiaryScreen(
                         modifier = Modifier
                             .fillParentMaxSize(),
                         value = diaryContent!!,
-                        onValueChange = { value -> readDiaryViewModel.updateDiaryContent(value) }
+                        onValueChange = { value -> readDiaryViewModel.updateDiaryContent(value) },
+                        textStyle = fontSizeLabelFromTextStyle(defaultSize).copy(
+                            fontFamily = defaultFont
+                        )
                     )
                 }
             }
 
             BottomXRMenuWithGesture(
-             selectedIndex = selectedIndex!!,
+                selectedIndex = selectedIndex!!,
                 paddingValues = paddingValues,
                 onMoodSelected = { mood ->
                     readDiaryViewModel.updateDiaryEmotion(mood)
@@ -111,5 +118,16 @@ fun ReadDiaryScreen(
                 }
             )
         }
+    }
+}
+
+@Composable
+fun fontSizeLabelFromTextStyle(fontSizeId: Int): TextStyle {
+    return when (fontSizeId) {
+        0 -> MaterialTheme.typography.headlineMedium
+        1 -> MaterialTheme.typography.headlineSmall
+        2 -> MaterialTheme.typography.bodyLarge
+        3 -> MaterialTheme.typography.bodyMedium
+        else -> MaterialTheme.typography.bodyMedium
     }
 }

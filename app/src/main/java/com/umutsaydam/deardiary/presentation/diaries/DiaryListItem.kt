@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.text.font.GenericFontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -36,6 +37,7 @@ fun DiaryListItem(
     modifier: Modifier = Modifier,
     index: Int,
     diaryEntity: DiaryEntity,
+    defaultFont: GenericFontFamily,
     onClick: (DiaryEntity) -> Unit,
     onLongClick: (DiaryEntity) -> Unit
 ) {
@@ -53,7 +55,7 @@ fun DiaryListItem(
         horizontalArrangement = Arrangement.Start
     ) {
         DrawTimeLine(index = index)
-        TimeLineContent(diaryEntity)
+        TimeLineContent(diaryEntity, defaultFont)
     }
 }
 
@@ -97,19 +99,26 @@ fun DrawTimeLine(
 }
 
 @Composable
-fun TimeLineContent(diaryEntity: DiaryEntity) {
+fun TimeLineContent(
+    diaryEntity: DiaryEntity,
+    defaultFont: GenericFontFamily,
+) {
     Column(
         modifier = Modifier.padding(end = 5.dp)
     ) {
         Text(
             text = DateFormatter.formatForUi(diaryEntity.diaryDate!!),
-            style = MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.headlineSmall.copy(
+                fontFamily = defaultFont
+            ),
             color = MaterialTheme.colorScheme.onSurface
         )
 
         Text(
             text = diaryEntity.diaryContent,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyMedium.copy(
+                fontFamily = defaultFont
+            ),
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             maxLines = 5,
             textAlign = TextAlign.Justify,

@@ -17,18 +17,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.umutsaydam.deardiary.R
+import com.umutsaydam.deardiary.domain.entity.FontFamilySealed
+import com.umutsaydam.deardiary.domain.entity.FontFamilySealed.Companion.fontFamilyList
+import com.umutsaydam.deardiary.domain.entity.FontSizeSealed
 import com.umutsaydam.deardiary.presentation.common.BaseAlertDialog
 
 @Composable
 fun FontSettingsDialog(
     modifier: Modifier = Modifier,
-    defaultTextStyle: Int,
-    defaultFontFamily: Int,
-    onSelected: (Int, Int) -> Unit,
+    defaultTextStyle: FontSizeSealed,
+    defaultFontFamily: FontFamilySealed,
+    onSave: (FontSizeSealed, FontFamilySealed) -> Unit,
+    onSelected: (FontSizeSealed, FontFamilySealed) -> Unit,
     onDismissed: () -> Unit
 ) {
     val textStyleList = listOf(
@@ -36,12 +39,6 @@ fun FontSettingsDialog(
         MaterialTheme.typography.headlineSmall,
         MaterialTheme.typography.bodyLarge,
         MaterialTheme.typography.bodyMedium
-    )
-    val fontFamilyList = listOf(
-        Pair("Serif", FontFamily.Serif),
-        Pair("Cursive", FontFamily.Cursive),
-        Pair("Monospace", FontFamily.Monospace),
-        Pair("SansSerif", FontFamily.SansSerif),
     )
     var isFontExpanded by remember { mutableStateOf(false) }
 
@@ -62,7 +59,7 @@ fun FontSettingsDialog(
                         )
 
                         Text(
-                            text = fontFamilyList[defaultFontFamily].first,
+                            text = defaultFontFamily.fontName,
                             textAlign = TextAlign.Center
                         )
                     }
@@ -71,11 +68,11 @@ fun FontSettingsDialog(
                         expanded = isFontExpanded,
                         onDismissRequest = { isFontExpanded = false }
                     ) {
-                        fontFamilyList.forEachIndexed { index, font ->
+                        fontFamilyList.forEach { item ->
                             DropdownMenuItem(
-                                text = { Text(font.first) },
+                                text = { Text(item.fontName) },
                                 onClick = {
-                                    onSelected(defaultTextStyle, index)
+                                    onSelected(defaultTextStyle, item)
                                     isFontExpanded = false
                                 }
                             )
@@ -86,17 +83,20 @@ fun FontSettingsDialog(
 
                 FontSizeListLazyColumn(
                     textStyleList = textStyleList,
-                    fontFamily = fontFamilyList[defaultFontFamily].second,
-                    selectedIndex = defaultTextStyle,
+                    fontFamily = defaultFontFamily.fontFamily,
+                    selectedIndex = defaultTextStyle.id,
                     onSelected = { index ->
-                        onSelected(index, defaultFontFamily)
+                        onSelected(FontSizeSealed.values[index], defaultFontFamily)
                     }
                 )
             }
         },
         onDismissed = { onDismissed() },
         confirmButton = {
-            TextButton(onClick = { onDismissed() }) {
+            TextButton(onClick = {
+                onSave(defaultTextStyle, defaultFontFamily)
+            }
+            ) {
                 Text(text = "Save", color = MaterialTheme.colorScheme.primary)
             }
         },

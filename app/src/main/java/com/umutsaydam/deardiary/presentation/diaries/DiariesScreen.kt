@@ -41,6 +41,7 @@ fun DiariesScreen(
     navController: NavHostController,
     diariesViewModel: DiariesViewModel = hiltViewModel()
 ) {
+    val defaultFont = diariesViewModel.defaultFont.collectAsState().value
     val isLoading by diariesViewModel.isLoading.collectAsState()
     val diariesList by diariesViewModel.diariesList.collectAsState()
     val isTokenExpired by diariesViewModel.isTokenExpired.collectAsState()
@@ -115,22 +116,25 @@ fun DiariesScreen(
             )
         }
 
-        DiaryListLazyRow(
-            modifier = Modifier.padding(
-                top = paddingValues.calculateTopPadding(),
-                bottom = paddingValues.calculateBottomPadding()
-            ),
-            diaryEntityList = diariesList,
-            onClick = { diaryEntity ->
-                val json = Json.encodeToString(diaryEntity)
-                val encodedJson = Uri.encode(json).replace("+", "%20")
-                navController.navigate("ReadDiary?diaryJson=$encodedJson")
-            },
-            onLongClick = { diaryEntity ->
-                selectedDiaryEntity = diaryEntity
-                isDeleteDialogOpen = true
-            }
-        )
+        if(defaultFont != null){
+            DiaryListLazyRow(
+                modifier = Modifier.padding(
+                    top = paddingValues.calculateTopPadding(),
+                    bottom = paddingValues.calculateBottomPadding()
+                ),
+                diaryEntityList = diariesList,
+                defaultFont = defaultFont,
+                onClick = { diaryEntity ->
+                    val json = Json.encodeToString(diaryEntity)
+                    val encodedJson = Uri.encode(json).replace("+", "%20")
+                    navController.navigate("ReadDiary?diaryJson=$encodedJson")
+                },
+                onLongClick = { diaryEntity ->
+                    selectedDiaryEntity = diaryEntity
+                    isDeleteDialogOpen = true
+                }
+            )
+        }
     }
 }
 

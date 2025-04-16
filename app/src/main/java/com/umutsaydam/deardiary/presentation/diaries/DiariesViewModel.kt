@@ -1,28 +1,37 @@
 package com.umutsaydam.deardiary.presentation.diaries
 
+import androidx.compose.ui.text.font.GenericFontFamily
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.umutsaydam.deardiary.domain.Resource
 import com.umutsaydam.deardiary.domain.entity.DiaryEntity
+import com.umutsaydam.deardiary.domain.entity.FontFamilySealed
 import com.umutsaydam.deardiary.domain.useCases.local.diaryRoomUseCase.DeleteDiaryRoomUseCase
 import com.umutsaydam.deardiary.domain.useCases.remote.diaryServerUseCase.GetDiariesServerUseCase
 import com.umutsaydam.deardiary.domain.useCases.local.diaryRoomUseCase.GetDiariesRoomUseCase
 import com.umutsaydam.deardiary.domain.useCases.local.diaryRoomUseCase.InsertAllDiariesRoomUseCase
+import com.umutsaydam.deardiary.domain.useCases.local.fontFamilyAndSizeUseCase.GetFontFamilyUseCase
 import com.umutsaydam.deardiary.domain.useCases.remote.diaryServerUseCase.DeleteDiaryServerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class DiariesViewModel @Inject constructor(
+    private val getFontFamilyUseCase: GetFontFamilyUseCase,
     private val getDiariesRoomUseCase: GetDiariesRoomUseCase,
     private val getDiariesServerUseCase: GetDiariesServerUseCase,
     private val insertAllDiariesRoomUseCase: InsertAllDiariesRoomUseCase,
     private val deleteDiaryServerUseCase: DeleteDiaryServerUseCase,
     private val deleteDiariesRoomUseCase: DeleteDiaryRoomUseCase
 ) : ViewModel() {
+
+    private val _defaultFont = MutableStateFlow<GenericFontFamily?>(null)
+    val defaultFont: StateFlow<GenericFontFamily?> = _defaultFont
+
     private val _diariesList = MutableStateFlow<List<DiaryEntity>>(emptyList())
     val diariesList: StateFlow<List<DiaryEntity>> = _diariesList
 
@@ -36,6 +45,7 @@ class DiariesViewModel @Inject constructor(
     val isTokenExpired: StateFlow<Boolean> = _isTokenExpired
 
     init {
+        getDefaultFont()
         getDiariesFromRoom()
         getDiariesFromServer()
     }
@@ -95,6 +105,13 @@ class DiariesViewModel @Inject constructor(
             } else {
                 _uiMessageState.value = "Something went wrong."
             }
+        }
+    }
+
+    private fun getDefaultFont() {
+        viewModelScope.launch {
+            _defaultFont.value =
+                FontFamilySealed.fromLabel(getFontFamilyUseCase().first()).fontFamily
         }
     }
 

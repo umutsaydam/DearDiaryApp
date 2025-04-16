@@ -1,6 +1,5 @@
 package com.umutsaydam.deardiary.presentation.settings
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,7 +20,6 @@ import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -48,9 +46,11 @@ import java.util.Calendar
 @Composable
 fun SettingsScreen(
     navController: NavHostController,
-    reminderViewModel: ReminderViewModel = hiltViewModel()
+    reminderViewModel: ReminderViewModel = hiltViewModel(),
+    settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
-    val context = LocalContext.current
+    val defaultTextStyle by settingsViewModel.defaultFontSize.collectAsState()
+    val defaultFontFamily by settingsViewModel.defaultFontFamily.collectAsState()
     val isReminderEnable by reminderViewModel.isReminderEnabled.collectAsState(initial = false)
     var isReminderTimeOpen by remember { mutableStateOf(false) }
     val calendar = Calendar.getInstance()
@@ -59,12 +59,9 @@ fun SettingsScreen(
         initialMinute = calendar.get(Calendar.MINUTE),
         is24Hour = true
     )
+    val context = LocalContext.current
 
     var isFontSettingsOpen by remember { mutableStateOf(false) }
-
-    var defaultTextStyle by remember { mutableIntStateOf(0) }
-    var defaultFontFamily by remember { mutableIntStateOf(0) }
-
     var isLogOutDialogOpen by remember { mutableStateOf(false) }
 
     BaseScaffold(
@@ -98,12 +95,14 @@ fun SettingsScreen(
                 FontSettingsDialog(
                     defaultTextStyle = defaultTextStyle,
                     defaultFontFamily = defaultFontFamily,
-                    onSelected = { styleIndex, fontIndex ->
-                        Log.i("R/T", "selected $styleIndex, $fontIndex")
-                        defaultTextStyle = styleIndex
-                        defaultFontFamily = fontIndex
+                    onSelected = { style, font ->
+                        settingsViewModel.setSizeAndFamily(style, font)
                     },
-                    onDismissed = { isFontSettingsOpen = false }
+                    onDismissed = { isFontSettingsOpen = false },
+                    onSave = { textStyle, fontFamily ->
+                        settingsViewModel.setFontFamilyAndSize(fontFamily, textStyle)
+                        isFontSettingsOpen = false
+                    }
                 )
             }
 

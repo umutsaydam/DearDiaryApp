@@ -1,22 +1,36 @@
 package com.umutsaydam.deardiary.presentation.readDiary
 
+import androidx.compose.ui.text.font.GenericFontFamily
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.umutsaydam.deardiary.domain.Resource
 import com.umutsaydam.deardiary.domain.entity.DiaryEntity
+import com.umutsaydam.deardiary.domain.entity.FontFamilySealed
+import com.umutsaydam.deardiary.domain.entity.FontSizeSealed
 import com.umutsaydam.deardiary.domain.useCases.local.diaryRoomUseCase.UpsertDiaryRoomUseCase
+import com.umutsaydam.deardiary.domain.useCases.local.fontFamilyAndSizeUseCase.GetFontFamilyUseCase
+import com.umutsaydam.deardiary.domain.useCases.local.fontFamilyAndSizeUseCase.GetFontSizeUseCase
 import com.umutsaydam.deardiary.domain.useCases.remote.diaryServerUseCase.UpdateDiaryServerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ReadDiaryViewModel @Inject constructor(
+    private val getFontFamilyUseCase: GetFontFamilyUseCase,
+    private val getFontSizeUseCase: GetFontSizeUseCase,
     private val updateDiaryServerUseCase: UpdateDiaryServerUseCase,
     private val upsertDiaryRoomUseCase: UpsertDiaryRoomUseCase
 ) : ViewModel() {
+
+    private val _defaultFont = MutableStateFlow<GenericFontFamily?>(null)
+    val defaultFont: StateFlow<GenericFontFamily?> = _defaultFont
+
+    private val _defaultSize = MutableStateFlow<Int?>(null)
+    val defaultSize: StateFlow<Int?> = _defaultSize
 
     private val _diary = MutableStateFlow<DiaryEntity?>(null)
     val diary: StateFlow<DiaryEntity?> = _diary
@@ -35,6 +49,11 @@ class ReadDiaryViewModel @Inject constructor(
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
+
+    init {
+        getDefaultFont()
+        getDefaultSize()
+    }
 
     fun setDiary(diary: DiaryEntity) {
         _diary.value = diary
@@ -75,6 +94,19 @@ class ReadDiaryViewModel @Inject constructor(
             }
         } else {
             _uiMessageState.value = "Your diary already up to date."
+        }
+    }
+
+    private fun getDefaultFont() {
+        viewModelScope.launch {
+            _defaultFont.value =
+                FontFamilySealed.fromLabel(getFontFamilyUseCase().first()).fontFamily
+        }
+    }
+
+    private fun getDefaultSize() {
+        viewModelScope.launch {
+            _defaultSize.value = FontSizeSealed.fromLabel(getFontSizeUseCase().first()).id
         }
     }
 
