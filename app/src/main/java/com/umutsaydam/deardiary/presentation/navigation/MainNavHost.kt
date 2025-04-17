@@ -11,11 +11,13 @@ import com.umutsaydam.deardiary.domain.entity.DiaryEntity
 import com.umutsaydam.deardiary.presentation.addDiary.AddDiaryScreen
 import com.umutsaydam.deardiary.presentation.auth.AuthScreen
 import com.umutsaydam.deardiary.presentation.diaries.DiariesScreen
+import com.umutsaydam.deardiary.presentation.entryFingerprint.EntryFingerprintScreen
+import com.umutsaydam.deardiary.presentation.entryPin.EntryPinScreen
 import com.umutsaydam.deardiary.presentation.insights.InsightsScreen
 import com.umutsaydam.deardiary.presentation.readDiary.ReadDiaryScreen
 import com.umutsaydam.deardiary.presentation.settings.SettingsScreen
 import com.umutsaydam.deardiary.presentation.settings.fingerPrintSettings.SetFingerPrintScreen
-import com.umutsaydam.deardiary.presentation.settings.pinSettings.PinSettingsScreen
+import com.umutsaydam.deardiary.presentation.settings.lockSettings.PinSettingsScreen
 import com.umutsaydam.deardiary.presentation.settings.pinSettings.SetPinScreen
 import kotlinx.serialization.json.Json
 
@@ -70,6 +72,21 @@ fun MainNavHost(mainDestination: String) {
             diary?.let { value ->
                 ReadDiaryScreen(navController, value)
             }
+        }
+
+        composable(
+            route = Route.EntryPin.route,
+            arguments = Route.EntryPin.arguments
+        ) { backStackEntry ->
+            val isFingerprintEnabledJson =
+                backStackEntry.arguments?.getBoolean("isFingerprintEnabled")
+            isFingerprintEnabledJson?.let {
+                EntryPinScreen(navController, it)
+            }
+        }
+
+        composable(Route.EntryFingerprint.route){
+            EntryFingerprintScreen(navController)
         }
     }
 }

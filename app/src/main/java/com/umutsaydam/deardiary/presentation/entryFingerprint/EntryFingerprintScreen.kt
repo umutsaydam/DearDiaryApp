@@ -1,4 +1,4 @@
-package com.umutsaydam.deardiary.presentation.settings.fingerPrintSettings
+package com.umutsaydam.deardiary.presentation.entryFingerprint
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -17,9 +17,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -30,25 +30,25 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.presentation.common.BaseScaffold
-import com.umutsaydam.deardiary.util.popBackStackOrIgnore
+import com.umutsaydam.deardiary.presentation.navigation.Route
+import com.umutsaydam.deardiary.util.safeNavigate
 
 @SuppressLint("SwitchIntDef")
 @Composable
-fun SetFingerPrintScreen(
+fun EntryFingerprintScreen(
     navController: NavHostController,
-    fingerPrintViewModel: FingerPrintViewModel = hiltViewModel()
+    entryFingerprintViewModel: EntryFingerprintViewModel = EntryFingerprintViewModel()
 ) {
     val context = LocalContext.current
-    val toastMessage = fingerPrintViewModel.uiMessageState.collectAsState().value
+    val toastMessage = entryFingerprintViewModel.uiMessageState.collectAsState().value
 
     LaunchedEffect(toastMessage) {
         if (toastMessage.isNotEmpty()) {
             Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
-            fingerPrintViewModel.clearUiMessageState()
+            entryFingerprintViewModel.clearUiMessageState()
         }
     }
 
@@ -59,23 +59,22 @@ fun SetFingerPrintScreen(
                 showBiometricPrompt(
                     context = context,
                     onSuccess = {
-                        fingerPrintViewModel.setIsFingerPrintEnabled()
-                        navController.popBackStackOrIgnore()
+                        navController.safeNavigate(Route.Diaries.route)
                     },
                     onFailed = {}
                 )
             }
 
             BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
-                fingerPrintViewModel.updateUiMessageState("There is no fingerprint sensor.")
+                entryFingerprintViewModel.updateUiMessageState("There is no fingerprint sensor.")
             }
 
             BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> {
-                fingerPrintViewModel.updateUiMessageState("Fingerprint sensor is unavailable.")
+                entryFingerprintViewModel.updateUiMessageState("Fingerprint sensor is unavailable.")
             }
 
             BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
-                fingerPrintViewModel.updateUiMessageState("There is no any defined fingerprint.")
+                entryFingerprintViewModel.updateUiMessageState("There is no any defined fingerprint.")
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     val enrollIntent = Intent(Settings.ACTION_BIOMETRIC_ENROLL).apply {
@@ -90,16 +89,13 @@ fun SetFingerPrintScreen(
         }
     }
     BaseScaffold(
-        navigation = {
-            IconButton(
+        topActions = {
+            TextButton(
                 onClick = {
-                    navController.popBackStackOrIgnore()
+                    navController.safeNavigate("EntryPin/true")
                 },
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_arrow_back_filled),
-                    contentDescription = "Back to the previous screen"
-                )
+                Text("Use pin")
             }
         },
         containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,

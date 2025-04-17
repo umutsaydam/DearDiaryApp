@@ -1,6 +1,5 @@
-package com.umutsaydam.deardiary.presentation.settings.pinSettings
+package com.umutsaydam.deardiary.presentation.entryPin
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,7 +15,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -24,40 +22,31 @@ import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.domain.PinStateEnum
 import com.umutsaydam.deardiary.presentation.common.BaseScaffold
 import com.umutsaydam.deardiary.presentation.common.PinPanel
+import com.umutsaydam.deardiary.presentation.navigation.Route
 import com.umutsaydam.deardiary.util.Constants.PIN_LENGTH
 import com.umutsaydam.deardiary.util.popBackStackOrIgnore
+import com.umutsaydam.deardiary.util.safeNavigate
 import kotlinx.coroutines.delay
 
 @Composable
-fun SetPinScreen(
+fun EntryPinScreen(
     navController: NavHostController,
-    pinSettingsViewModel: PinSettingsViewModel = hiltViewModel()
+    isFingerprintEnable: Boolean,
+    entryPinScreenViewModel: EntryPinScreenViewModel = hiltViewModel()
 ) {
+    val pinState = entryPinScreenViewModel.pinState.collectAsState().value
+    val enteredPin = entryPinScreenViewModel.enteredPin.collectAsState().value
+    val pinList = enteredPin.map { it.toString().toInt() }
     val focusRequester = remember { FocusRequester() }
-    val pinText = pinSettingsViewModel.pinText.collectAsState()
-    val pin = pinText.value.map { it.toString().toInt() }
-    val pinTextConfirm = pinSettingsViewModel.pinTextConfirm.collectAsState()
-    val pinConfirm = pinTextConfirm.value.map { it.toString().toInt() }
-    val maxLength = PIN_LENGTH
-    val pinState = pinSettingsViewModel.pinState.collectAsState().value
-    val toastMessage = pinSettingsViewModel.uiMessageState.collectAsState().value
-    val context = LocalContext.current
 
-    LaunchedEffect(toastMessage) {
-        if (toastMessage.isNotEmpty()) {
-            Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
-            pinSettingsViewModel.clearUiMessageState()
-        }
-    }
-
-    LaunchedEffect(pinState) {
+    LaunchedEffect(Unit) {
         delay(300)
         focusRequester.requestFocus()
     }
 
-    pinState?.let {
-        BaseScaffold(
-            navigation = {
+    BaseScaffold(
+        navigation = {
+            if (isFingerprintEnable) {
                 IconButton(
                     onClick = {
                         navController.popBackStackOrIgnore()
@@ -68,9 +57,11 @@ fun SetPinScreen(
                         contentDescription = "Back to the previous screen"
                     )
                 }
-            },
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
-        ) { paddingValues ->
+            }
+        },
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+    ) { paddingValues ->
+        pinState?.let {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -83,43 +74,22 @@ fun SetPinScreen(
                 when (it) {
                     PinStateEnum.ENTER_CURRENT_PIN -> {
                         PinPanel(
-                            pin = pin,
-                            maxLength = maxLength,
-                            pinText = pinText.value,
+                            pin = pinList,
+                            maxLength = PIN_LENGTH,
+                            pinText = enteredPin,
                             focusRequester = focusRequester,
                             onValueChange = { value ->
-                                pinSettingsViewModel.updatePinText(value)
+                                entryPinScreenViewModel.updateEnteredPin(value)
                             }
                         )
-                    }
 
-                    PinStateEnum.ENTER_FIRST -> {
-                        PinPanel(
-                            pin = pin,
-                            maxLength = maxLength,
-                            pinText = pinText.value,
-                            focusRequester = focusRequester,
-                            onValueChange = { value ->
-                                pinSettingsViewModel.updatePinText(value)
-                            }
-                        )
-                    }
-
-                    PinStateEnum.CONFIRM_PIN -> {
-                        PinPanel(
-                            pin = pinConfirm,
-                            maxLength = maxLength,
-                            pinText = pinTextConfirm.value,
-                            focusRequester = focusRequester,
-                            onValueChange = { value ->
-                                pinSettingsViewModel.updatePinTextConfirm(value)
-                            }
-                        )
                     }
 
                     PinStateEnum.DONE -> {
-                        navController.popBackStackOrIgnore()
+                        navController.safeNavigate(Route.Diaries.route)
                     }
+
+                    else -> {}
                 }
             }
         }
