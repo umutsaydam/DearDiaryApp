@@ -9,5 +9,7 @@ interface UserRepository {
 
     suspend fun userLogin(userEntity: UserEntity): Resource<TokenEntity>
 
+    suspend fun userLogout(): Resource<Unit>
+
     suspend fun tokenReusable(): Resource<Boolean>
 }

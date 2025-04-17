@@ -20,6 +20,9 @@ interface DearDiaryApiService {
     @POST("user/login")
     suspend fun userLogin(@Body userDto: UserDto): Response<TokenDto>
 
+    @POST("user/logout")
+    suspend fun userLogout(): Response<Unit>
+
     @POST("user/token-reusable")
     suspend fun tokenReusable(): Response<Unit>
 

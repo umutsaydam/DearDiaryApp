@@ -50,7 +50,7 @@ import com.umutsaydam.deardiary.domain.AuthStateEnum
 import com.umutsaydam.deardiary.domain.Resource
 import com.umutsaydam.deardiary.presentation.common.LoadingCircular
 import com.umutsaydam.deardiary.presentation.navigation.Route
-import com.umutsaydam.deardiary.util.safeNavigate
+import com.umutsaydam.deardiary.util.safeNavigateWithClearingBackStack
 
 @Composable
 fun AuthScreen(
@@ -83,7 +83,7 @@ fun AuthScreen(
 
     LaunchedEffect(userLoginResource) {
         if (userLoginResource is Resource.Success) {
-            navController.safeNavigate(Route.Diaries.route)
+            navController.safeNavigateWithClearingBackStack(Route.Diaries.route)
         }
     }
 

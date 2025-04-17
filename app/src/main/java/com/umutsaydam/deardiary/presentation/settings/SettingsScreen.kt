@@ -18,6 +18,7 @@ import androidx.compose.material3.TimeInput
 import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +41,7 @@ import com.umutsaydam.deardiary.presentation.navigation.Route
 import com.umutsaydam.deardiary.presentation.reminder.ReminderViewModel
 import com.umutsaydam.deardiary.presentation.settings.fontSettings.FontSettingsDialog
 import com.umutsaydam.deardiary.util.safeNavigate
+import com.umutsaydam.deardiary.util.safeNavigateWithClearingBackStack
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,6 +65,13 @@ fun SettingsScreen(
 
     var isFontSettingsOpen by remember { mutableStateOf(false) }
     var isLogOutDialogOpen by remember { mutableStateOf(false) }
+    val isLogout by settingsViewModel.isLogout.collectAsState()
+
+    LaunchedEffect(isLogout) {
+        if (isLogout) {
+            navController.safeNavigateWithClearingBackStack(Route.Auth.route)
+        }
+    }
 
     BaseScaffold(
         title = "Diaries",
@@ -108,7 +117,10 @@ fun SettingsScreen(
 
             if (isLogOutDialogOpen) {
                 showLogoutDialog(
-                    onConfirm = { isLogOutDialogOpen = false },
+                    onConfirm = {
+                        isLogOutDialogOpen = false
+                        settingsViewModel.logout()
+                    },
                     onDismissed = { isLogOutDialogOpen = false }
                 )
             }
@@ -174,14 +186,14 @@ fun showLogoutDialog(
 ) {
     BaseAlertDialog(
         icon = R.drawable.ic_log_out_outline,
-        contentDesc = "Logo out",
-        title = "Log out",
-        text = { Text("Log out") },
+        contentDesc = "Logout",
+        title = "Logout",
+        text = { Text("You are about to log out of your account, are you sure?") },
         onDismissed = { onDismissed() },
         confirmButton = {
             TextButton(onClick = { onConfirm() }) {
                 Text(
-                    text = "You are about to log out of your account, are you sure?",
+                    text = "Logout",
                     color = MaterialTheme.colorScheme.primary
                 )
             }

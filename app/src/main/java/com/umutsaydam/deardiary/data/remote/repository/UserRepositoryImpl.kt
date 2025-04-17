@@ -41,6 +41,17 @@ class UserRepositoryImpl @Inject constructor(
         return Resource.Error()
     }
 
+    override suspend fun userLogout(): Resource<Unit> {
+        val response = dearDiaryApiService.userLogout()
+        // 401 Token is wrong or expire.
+        // 200 Ok
+
+        if (response.code() == 200) {
+            return Resource.Success()
+        }
+        return Resource.Error()
+    }
+
     override suspend fun tokenReusable(): Resource<Boolean> {
         val response = dearDiaryApiService.tokenReusable()
         // 401 Token is wrong or expired.
