@@ -56,7 +56,7 @@ fun EntryFingerprintScreen(
         topActions = {
             TextButton(
                 onClick = {
-                    navController.safeNavigate("EntryPin/true")
+                    navController.safeNavigate(Route.EntryPin.createRoute(true))
                 },
             ) {
                 Text("Use pin")

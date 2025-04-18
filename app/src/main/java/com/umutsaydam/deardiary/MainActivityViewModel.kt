@@ -56,7 +56,7 @@ class MainActivityViewModel @Inject constructor(
                         if (_isFingerprintEnabled.value) {
                             _nextRoute.value = Route.EntryFingerprint.route
                         } else if (_isPinEnabled.value) {
-                            _nextRoute.value = "EntryPin/false"
+                            _nextRoute.value = Route.EntryPin.createRoute(false)
                         } else {
                             _nextRoute.value = Route.Diaries.route
                         }

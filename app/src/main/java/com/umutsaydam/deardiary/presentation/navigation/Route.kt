@@ -22,6 +22,8 @@ sealed class Route(
         arguments = listOf(
             navArgument("isFingerprintEnabled") { type = NavType.BoolType }
         )
-    )
+    ){
+        fun createRoute(isFingerprintEnabled: Boolean) = "EntryPin/$isFingerprintEnabled"
+    }
     data object EntryFingerprint: Route("EntryFingerprint")
 }
