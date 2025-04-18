@@ -1,6 +1,5 @@
 package com.umutsaydam.deardiary.presentation.entryFingerprint
 
-import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,7 +27,6 @@ import com.umutsaydam.deardiary.presentation.common.BiometricManagerLaunchEffect
 import com.umutsaydam.deardiary.presentation.navigation.Route
 import com.umutsaydam.deardiary.util.safeNavigate
 
-@SuppressLint("SwitchIntDef")
 @Composable
 fun EntryFingerprintScreen(
     navController: NavHostController,
