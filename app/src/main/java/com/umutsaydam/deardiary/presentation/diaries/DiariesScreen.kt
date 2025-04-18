@@ -25,6 +25,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.umutsaydam.deardiary.R
+import com.umutsaydam.deardiary.domain.UiMessage
+import com.umutsaydam.deardiary.domain.UiState
 import com.umutsaydam.deardiary.domain.entity.DiaryEntity
 import com.umutsaydam.deardiary.presentation.Dimens.CORNER_MEDIUM
 import com.umutsaydam.deardiary.presentation.common.BaseAlertDialog
@@ -33,6 +35,7 @@ import com.umutsaydam.deardiary.presentation.common.LoadingCircular
 import com.umutsaydam.deardiary.presentation.common.MainNavigationAppBar
 import com.umutsaydam.deardiary.presentation.navigation.Route
 import com.umutsaydam.deardiary.util.safeNavigate
+import com.umutsaydam.deardiary.util.safeNavigateWithClearingBackStack
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -42,24 +45,29 @@ fun DiariesScreen(
     diariesViewModel: DiariesViewModel = hiltViewModel()
 ) {
     val defaultFont = diariesViewModel.defaultFont.collectAsState().value
-    val isLoading by diariesViewModel.isLoading.collectAsState()
-    val diariesList by diariesViewModel.diariesList.collectAsState()
-    val isTokenExpired by diariesViewModel.isTokenExpired.collectAsState()
+    val diariesUiState by diariesViewModel.diariesUiState.collectAsState()
     val uiMessageState by diariesViewModel.uiMessageState.collectAsState()
+
     val context = LocalContext.current
     var isDeleteDialogOpen by remember { mutableStateOf(false) }
     var selectedDiaryEntity: DiaryEntity? by remember { mutableStateOf(null) }
 
-    LaunchedEffect(isTokenExpired) {
-        if (isTokenExpired) {
-            navController.safeNavigate(Route.Auth.route)
-        }
-    }
-
     LaunchedEffect(uiMessageState) {
-        if (uiMessageState.isNotEmpty()) {
-            Toast.makeText(context, uiMessageState, Toast.LENGTH_SHORT).show()
-            diariesViewModel.clearUiMessageState()
+        when (val state = uiMessageState) {
+            is UiMessage.Success -> {
+                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                diariesViewModel.clearUiMessageState()
+            }
+
+            is UiMessage.Error -> {
+                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                if (state.statusCode != null && state.statusCode == 401) {
+                    navController.safeNavigateWithClearingBackStack(Route.Auth.route)
+                }
+                diariesViewModel.clearUiMessageState()
+            }
+
+            else -> {}
         }
     }
 
@@ -83,7 +91,7 @@ fun DiariesScreen(
         },
         bottomBar = { MainNavigationAppBar(navController) }
     ) { paddingValues ->
-        if (isLoading) {
+        if (diariesUiState is UiState.Loading) {
             LoadingCircular()
         }
 
@@ -116,13 +124,13 @@ fun DiariesScreen(
             )
         }
 
-        if(defaultFont != null){
+        if (defaultFont != null && diariesUiState is UiState.Success) {
             DiaryListLazyRow(
                 modifier = Modifier.padding(
                     top = paddingValues.calculateTopPadding(),
                     bottom = paddingValues.calculateBottomPadding()
                 ),
-                diaryEntityList = diariesList,
+                diaryEntityList = (diariesUiState as UiState.Success<List<DiaryEntity>>).data!!,
                 defaultFont = defaultFont,
                 onClick = { diaryEntity ->
                     val json = Json.encodeToString(diaryEntity)

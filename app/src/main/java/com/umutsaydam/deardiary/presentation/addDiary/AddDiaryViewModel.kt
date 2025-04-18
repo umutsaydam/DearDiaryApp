@@ -3,6 +3,8 @@ package com.umutsaydam.deardiary.presentation.addDiary
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.umutsaydam.deardiary.domain.Resource
+import com.umutsaydam.deardiary.domain.UiMessage
+import com.umutsaydam.deardiary.domain.UiState
 import com.umutsaydam.deardiary.domain.entity.DiaryEntity
 import com.umutsaydam.deardiary.domain.useCases.local.diaryRoomUseCase.UpsertDiaryRoomUseCase
 import com.umutsaydam.deardiary.domain.useCases.remote.diaryServerUseCase.SaveDiaryServerUseCase
@@ -20,14 +22,11 @@ class AddDiaryViewModel @Inject constructor(
     private val saveDiaryRoomUseCase: UpsertDiaryRoomUseCase
 ) : ViewModel() {
 
-    private val _uiMessageState = MutableStateFlow("")
-    val uiMessageState: StateFlow<String> = _uiMessageState
+    private val _uiMessageState = MutableStateFlow<UiMessage?>(null)
+    val uiMessageState: StateFlow<UiMessage?> = _uiMessageState
 
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
-
-    private val _isTokenExpired = MutableStateFlow(false)
-    val isTokenExpired: StateFlow<Boolean> = _isTokenExpired
+    private val _addDiaryUiState = MutableStateFlow<UiState<DiaryEntity>>(UiState.Idle)
+    val addDiaryUiState: StateFlow<UiState<DiaryEntity>> = _addDiaryUiState
 
     private val _selectedDateMillis = MutableStateFlow(Calendar.getInstance().timeInMillis)
     val selectedDateMillis: StateFlow<Long> = _selectedDateMillis
@@ -39,47 +38,45 @@ class AddDiaryViewModel @Inject constructor(
     val diaryEmotion: StateFlow<Int> = _diaryEmotion
 
     fun saveDiaryServer() {
-        if (_diaryContent.value.isNotEmpty()) {
-            _isLoading.value = true
-            viewModelScope.launch {
-                val result = saveDiaryServerUseCase(
-                    DiaryEntity(
-                        diaryContent = diaryContent.value.trim(),
-                        diaryDate = DateFormatter.formatForSelectedDateForServer(_selectedDateMillis.value),
-                        diaryEmotion = _diaryEmotion.value
-                    )
+        if (_diaryContent.value.isBlank()) {
+            _uiMessageState.value = UiMessage.Error("Content can not be empty.")
+            return
+        }
+
+        viewModelScope.launch {
+            _addDiaryUiState.value = UiState.Loading
+
+            val result = saveDiaryServerUseCase(
+                DiaryEntity(
+                    diaryContent = diaryContent.value.trim(),
+                    diaryDate = DateFormatter.formatForSelectedDateForServer(_selectedDateMillis.value),
+                    diaryEmotion = _diaryEmotion.value
                 )
+            )
 
-                when (result) {
-                    is Resource.Success -> {
-                        result.data?.let {
-                            saveDiaryRoomUseCase(it)
-                        }
-                        _isLoading.value = false
+            when (result) {
+                is Resource.Success -> {
+                    result.data?.let {
+                        saveDiaryRoomUseCase(it)
+                        _addDiaryUiState.value = UiState.Success(it)
                     }
-
-                    is Resource.Error -> {
-                        val message = result.message
-                        val statusCode = result.status
-                        if (message != null) {
-                            _uiMessageState.value = message
-                        }
-                        if (statusCode != null && statusCode == 401) {
-                            _isTokenExpired.value = true
-                        }
-                        _isLoading.value = false
-                    }
-
-                    is Resource.Loading -> {}
                 }
+
+                is Resource.Error -> {
+                    _uiMessageState.value = UiMessage.Error(
+                        message = result.message ?: "Something went wrong.",
+                        statusCode = result.status
+                    )
+                    _addDiaryUiState.value = UiState.Idle
+                }
+
+                is Resource.Loading -> {}
             }
-        } else {
-            _uiMessageState.value = "Content can not be empty."
         }
     }
 
     fun clearUiMessageState() {
-        _uiMessageState.value = ""
+        _uiMessageState.value = null
     }
 
     fun updateSelectedDate(selectedDateMillis: Long) {

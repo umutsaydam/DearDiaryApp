@@ -4,6 +4,8 @@ import androidx.compose.ui.text.font.GenericFontFamily
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.umutsaydam.deardiary.domain.Resource
+import com.umutsaydam.deardiary.domain.UiMessage
+import com.umutsaydam.deardiary.domain.UiState
 import com.umutsaydam.deardiary.domain.entity.DiaryEntity
 import com.umutsaydam.deardiary.domain.entity.FontFamilySealed
 import com.umutsaydam.deardiary.domain.useCases.local.diaryRoomUseCase.DeleteDiaryRoomUseCase
@@ -32,17 +34,11 @@ class DiariesViewModel @Inject constructor(
     private val _defaultFont = MutableStateFlow<GenericFontFamily?>(null)
     val defaultFont: StateFlow<GenericFontFamily?> = _defaultFont
 
-    private val _diariesList = MutableStateFlow<List<DiaryEntity>>(emptyList())
-    val diariesList: StateFlow<List<DiaryEntity>> = _diariesList
+    private val _diariesUiState = MutableStateFlow<UiState<List<DiaryEntity>>>(UiState.Idle)
+    val diariesUiState: StateFlow<UiState<List<DiaryEntity>>> = _diariesUiState
 
-    private val _uiMessageState = MutableStateFlow("")
-    val uiMessageState: StateFlow<String> = _uiMessageState
-
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
-
-    private val _isTokenExpired = MutableStateFlow(false)
-    val isTokenExpired: StateFlow<Boolean> = _isTokenExpired
+    private val _uiMessageState = MutableStateFlow<UiMessage?>(null)
+    val uiMessageState: StateFlow<UiMessage?> = _uiMessageState
 
     init {
         getDefaultFont()
@@ -51,11 +47,10 @@ class DiariesViewModel @Inject constructor(
     }
 
     private fun getDiariesFromRoom() {
-        _isLoading.value = true
         viewModelScope.launch {
+            _diariesUiState.value = UiState.Loading
             getDiariesRoomUseCase().collect { diaries ->
-                _diariesList.value = diaries
-                _isLoading.value = false
+                _diariesUiState.value = UiState.Success(diaries)
             }
         }
     }
@@ -70,14 +65,10 @@ class DiariesViewModel @Inject constructor(
                 }
 
                 is Resource.Error -> {
-                    val message = result.message
-                    val statusCode = result.status
-                    if (message != null) {
-                        _uiMessageState.value = message
-                    }
-                    if (statusCode != null && statusCode == 401) {
-                        _isTokenExpired.value = true
-                    }
+                    _uiMessageState.value = UiMessage.Error(
+                        message = result.message ?: "Something went wrong.",
+                        statusCode = result.status
+                    )
                 }
 
                 is Resource.Loading -> {}
@@ -86,7 +77,8 @@ class DiariesViewModel @Inject constructor(
     }
 
     private fun addNonDiaries(diariesFromServer: List<DiaryEntity>) {
-        val localIds = _diariesList.value.map { it.diaryId }.toSet()
+        val currentData = (_diariesUiState.value as UiState.Success).data ?: emptyList()
+        val localIds = currentData.map { it.diaryId }.toSet()
         val newDiaries: List<DiaryEntity> = diariesFromServer.filterNot { diary ->
             diary.diaryId in localIds
         }
@@ -101,9 +93,9 @@ class DiariesViewModel @Inject constructor(
         viewModelScope.launch {
             deleteDiariesRoomUseCase(selectedDiaryEntity)
             if (deleteDiaryServerUseCase(selectedDiaryEntity.diaryId) is Resource.Success) {
-                _uiMessageState.value = "Deleted successfully."
+                _uiMessageState.value = UiMessage.Success("Deleted successfully.")
             } else {
-                _uiMessageState.value = "Something went wrong."
+                _uiMessageState.value = UiMessage.Error("Something went wrong.")
             }
         }
     }
@@ -116,6 +108,6 @@ class DiariesViewModel @Inject constructor(
     }
 
     fun clearUiMessageState() {
-        _uiMessageState.value = ""
+        _uiMessageState.value = null
     }
 }

@@ -47,7 +47,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.domain.AuthStateEnum
-import com.umutsaydam.deardiary.domain.Resource
+import com.umutsaydam.deardiary.domain.UiMessage
+import com.umutsaydam.deardiary.domain.UiState
 import com.umutsaydam.deardiary.presentation.common.LoadingCircular
 import com.umutsaydam.deardiary.presentation.navigation.Route
 import com.umutsaydam.deardiary.util.safeNavigateWithClearingBackStack
@@ -57,10 +58,10 @@ fun AuthScreen(
     navController: NavHostController,
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
-    val userLoginResource by authViewModel.loginUserResource.collectAsState()
-    val uiMessageState by authViewModel.uiMessageState.collectAsState()
+    val authUiState by authViewModel.authUiState.collectAsState()
     val authState by authViewModel.authState.collectAsState()
-    val isLoading by authViewModel.isLoading.collectAsState()
+    val uiMessageState by authViewModel.uiMessageState.collectAsState()
+
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordConfirm by remember { mutableStateOf("") }
@@ -75,19 +76,28 @@ fun AuthScreen(
     }
 
     LaunchedEffect(uiMessageState) {
-        if (uiMessageState.isNotEmpty()) {
-            Toast.makeText(context, uiMessageState, Toast.LENGTH_SHORT).show()
-            authViewModel.clearUiMessageState()
+        when (val state = uiMessageState) {
+            is UiMessage.Success -> {
+                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                authViewModel.clearUiMessageState()
+            }
+
+            is UiMessage.Error -> {
+                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                authViewModel.clearUiMessageState()
+            }
+
+            else -> {}
         }
     }
 
-    LaunchedEffect(userLoginResource) {
-        if (userLoginResource is Resource.Success) {
+    LaunchedEffect(authUiState) {
+        if (authUiState is UiState.Success) {
             navController.safeNavigateWithClearingBackStack(Route.Diaries.route)
         }
     }
 
-    if (isLoading) {
+    if (authUiState is UiState.Loading) {
         LoadingCircular()
     }
 

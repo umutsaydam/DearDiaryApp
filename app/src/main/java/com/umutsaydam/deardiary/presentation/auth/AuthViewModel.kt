@@ -1,10 +1,11 @@
 package com.umutsaydam.deardiary.presentation.auth
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.umutsaydam.deardiary.domain.AuthStateEnum
 import com.umutsaydam.deardiary.domain.Resource
+import com.umutsaydam.deardiary.domain.UiMessage
+import com.umutsaydam.deardiary.domain.UiState
 import com.umutsaydam.deardiary.domain.entity.TokenEntity
 import com.umutsaydam.deardiary.domain.entity.UserEntity
 import com.umutsaydam.deardiary.domain.useCases.remote.auth.UserCreateUseCase
@@ -26,69 +27,70 @@ class AuthViewModel @Inject constructor(
     private val _authState = MutableStateFlow(AuthStateEnum.LOGIN)
     val authState: StateFlow<AuthStateEnum> = _authState
 
-    private val _uiMessageState = MutableStateFlow("")
-    val uiMessageState: StateFlow<String> = _uiMessageState
+    private val _authUiState = MutableStateFlow<UiState<TokenEntity>>(UiState.Idle)
+    val authUiState: StateFlow<UiState<TokenEntity>> = _authUiState
 
-    private val _createUserResource = MutableStateFlow<Resource<Unit>>(Resource.Loading())
-
-    private val _loginUserResource = MutableStateFlow<Resource<TokenEntity>>(Resource.Loading())
-    val loginUserResource: StateFlow<Resource<TokenEntity>> = _loginUserResource
-
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
+    private val _uiMessageState = MutableStateFlow<UiMessage?>(null)
+    val uiMessageState: StateFlow<UiMessage?> = _uiMessageState
 
     fun createUser(username: String, password: String, passwordConfirm: String) {
-        if (username.isNotEmpty() && password.isNotEmpty() && passwordConfirm.isNotEmpty()) {
-            if (password == passwordConfirm) {
-                viewModelScope.launch {
-                    _createUserResource.value =
-                        createUseCase(UserEntity(username = username, password = password))
-                    when (_createUserResource.value) {
-                        is Resource.Success -> {
-                            _uiMessageState.value = "Signed up successfully!"
-                            switchLoginState()
-                        }
+        if (username.isBlank() && password.isBlank() && passwordConfirm.isBlank()) {
+            _uiMessageState.value = UiMessage.Error("Username, passwords can not be empty.")
+            return
+        }
 
-                        is Resource.Error -> {
-                            _createUserResource.value.message?.let { _uiMessageState.value = it }
-                        }
+        if (password != passwordConfirm) {
+            _uiMessageState.value = UiMessage.Error("Passwords does not match.")
+            return
+        }
 
-                        is Resource.Loading -> {
-                            _isLoading.value = true
-                        }
-                    }
+        viewModelScope.launch {
+            _authUiState.value = UiState.Loading
+            val result = createUseCase(UserEntity(username = username, password = password))
+            when (result) {
+                is Resource.Success -> {
+                    switchLoginState()
+                    _uiMessageState.value = UiMessage.Success("Signed up Successfully!")
+                    _authUiState.value = UiState.Idle
                 }
-            } else {
-                _uiMessageState.value = "Passwords does not match."
+
+                is Resource.Error -> {
+                    _uiMessageState.value =
+                        UiMessage.Error(result.message ?: "Something went wrong.")
+                    _authUiState.value = UiState.Idle
+                }
+
+                is Resource.Loading -> {
+                    UiState.Loading
+                }
             }
-        } else {
-            _uiMessageState.value = "Username, passwords can not be empty."
         }
     }
 
     fun loginUser(username: String, password: String) {
-        if (username.isNotEmpty() && password.isNotEmpty()) {
-            viewModelScope.launch {
-                _loginUserResource.value =
-                    loginUseCase(UserEntity(username = username, password = password))
-                when (_loginUserResource.value) {
-                    is Resource.Success -> {
-                        _uiMessageState.value = "Signed in successfully!"
-                        Log.i("R/T", "viewmodel: ${_loginUserResource.value.data}")
-                        _loginUserResource.value.data?.let { saveTokenUseCase(token = it.token) }
-                    }
+        if (username.isBlank() || password.isBlank()) {
+            _uiMessageState.value = UiMessage.Error("Username, password can not be empty.")
+            return
+        }
 
-                    is Resource.Error -> {
-                        _loginUserResource.value.message?.let { _uiMessageState.value = it }
-                    }
+        viewModelScope.launch {
+            _authUiState.value = UiState.Loading
+            when (val result = loginUseCase(UserEntity(username = username, password = password))) {
+                is Resource.Success -> {
+                    result.data?.let { saveTokenUseCase(it.token) }
+                    _authUiState.value = UiState.Success()
+                }
 
-                    is Resource.Loading -> {
-                        _isLoading.value = true
-                    }
+                is Resource.Error -> {
+                    _uiMessageState.value =
+                        UiMessage.Error(result.message ?: "Something went wrong.")
+                    _authUiState.value = UiState.Idle
+                }
+
+                is Resource.Loading -> {
+                    UiState.Loading
                 }
             }
-        } else {
-            _uiMessageState.value = "Username, password can not be empty."
         }
     }
 
@@ -101,6 +103,6 @@ class AuthViewModel @Inject constructor(
     }
 
     fun clearUiMessageState() {
-        _uiMessageState.value = ""
+        _uiMessageState.value = null
     }
 }

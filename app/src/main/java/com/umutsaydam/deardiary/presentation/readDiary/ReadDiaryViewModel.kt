@@ -4,6 +4,8 @@ import androidx.compose.ui.text.font.GenericFontFamily
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.umutsaydam.deardiary.domain.Resource
+import com.umutsaydam.deardiary.domain.UiMessage
+import com.umutsaydam.deardiary.domain.UiState
 import com.umutsaydam.deardiary.domain.entity.DiaryEntity
 import com.umutsaydam.deardiary.domain.entity.FontFamilySealed
 import com.umutsaydam.deardiary.domain.entity.FontSizeSealed
@@ -32,23 +34,17 @@ class ReadDiaryViewModel @Inject constructor(
     private val _defaultSize = MutableStateFlow<Int?>(null)
     val defaultSize: StateFlow<Int?> = _defaultSize
 
-    private val _diary = MutableStateFlow<DiaryEntity?>(null)
-    val diary: StateFlow<DiaryEntity?> = _diary
-
     private val _diaryEmotion = MutableStateFlow<Int?>(null)
     val diaryEmotion: StateFlow<Int?> = _diaryEmotion
 
     private val _diaryContent = MutableStateFlow<String?>(null)
     val diaryContent: StateFlow<String?> = _diaryContent
 
-    private val _uiMessageState = MutableStateFlow("")
-    val uiMessageState: StateFlow<String> = _uiMessageState
+    private val _uiMessageState = MutableStateFlow<UiMessage?>(null)
+    val uiMessageState: StateFlow<UiMessage?> = _uiMessageState
 
-    private val _isTokenExpired = MutableStateFlow(false)
-    val isTokenExpired: StateFlow<Boolean> = _isTokenExpired
-
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
+    private val _readDiaryUiState = MutableStateFlow<UiState<DiaryEntity>>(UiState.Idle)
+    val readDiaryUiState: StateFlow<UiState<DiaryEntity>> = _readDiaryUiState
 
     init {
         getDefaultFont()
@@ -56,44 +52,49 @@ class ReadDiaryViewModel @Inject constructor(
     }
 
     fun setDiary(diary: DiaryEntity) {
-        _diary.value = diary
+        _readDiaryUiState.value = UiState.Success(diary)
         _diaryEmotion.value = diary.diaryEmotion
         _diaryContent.value = diary.diaryContent
     }
 
     fun update() {
-        if (_diaryContent.value != diary.value!!.diaryContent || _diaryEmotion.value != _diary.value!!.diaryEmotion) {
-            _isLoading.value = true
+        val currDiary = (_readDiaryUiState.value as? UiState.Success)?.data?.copy()
+        currDiary?.let { it ->
+            if (_diaryContent.value == it.diaryContent && _diaryEmotion.value == it.diaryEmotion) {
+                _uiMessageState.value = UiMessage.Error("Your diary already up to date.")
+                return
+            }
+
+            if (_diaryContent.value.isNullOrEmpty()) {
+                _uiMessageState.value = UiMessage.Error("Content can not be empty.")
+                return
+            }
+
             viewModelScope.launch {
-                _diary.value!!.diaryContent = _diaryContent.value!!
-                _diary.value!!.diaryEmotion = _diaryEmotion.value!!
-                when (val result = updateDiaryServerUseCase(_diary.value!!)) {
+                _readDiaryUiState.value = UiState.Loading
+                it.diaryContent = _diaryContent.value!!
+                it.diaryEmotion = _diaryEmotion.value!!
+                when (val result = updateDiaryServerUseCase(it)) {
                     is Resource.Success -> {
-                        result.data?.let {
-                            setDiary(it)
-                            upsertDiaryRoomUseCase(it)
-                            _uiMessageState.value = "Diary updated successfully."
+                        result.data?.let { newDiary ->
+                            setDiary(newDiary)
+                            upsertDiaryRoomUseCase(newDiary)
+                            _uiMessageState.value =
+                                UiMessage.Success("Diary updated successfully.")
                         }
-                        _isLoading.value = false
                     }
 
                     is Resource.Error -> {
-                        val message = result.message
-                        val statusCode = result.status
-                        if (message != null) {
-                            _uiMessageState.value = message
-                        }
-                        if (statusCode != null && statusCode == 401) {
-                            _isTokenExpired.value = true
-                        }
-                        _isLoading.value = false
+                        _uiMessageState.value = UiMessage.Error(
+                            message = result.message ?: "Something went wrong.",
+                            statusCode = result.status
+                        )
+                        _readDiaryUiState.value = UiState.Idle
                     }
 
                     is Resource.Loading -> {}
                 }
             }
-        } else {
-            _uiMessageState.value = "Your diary already up to date."
         }
     }
 
@@ -111,7 +112,7 @@ class ReadDiaryViewModel @Inject constructor(
     }
 
     fun clearUiMessageState() {
-        _uiMessageState.value = ""
+        _uiMessageState.value = null
     }
 
     fun updateDiaryEmotion(index: Int) {

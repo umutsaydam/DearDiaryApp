@@ -29,12 +29,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.umutsaydam.deardiary.R
+import com.umutsaydam.deardiary.domain.UiMessage
+import com.umutsaydam.deardiary.domain.UiState
 import com.umutsaydam.deardiary.presentation.common.BaseScaffold
 import com.umutsaydam.deardiary.presentation.common.BottomXRMenuWithGesture
 import com.umutsaydam.deardiary.presentation.common.LoadingCircular
 import com.umutsaydam.deardiary.presentation.navigation.Route
 import com.umutsaydam.deardiary.util.popBackStackOrIgnore
-import com.umutsaydam.deardiary.util.safeNavigate
+import com.umutsaydam.deardiary.util.safeNavigateWithClearingBackStack
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,9 +44,8 @@ fun AddDiaryScreen(
     navController: NavController,
     addDiaryViewModel: AddDiaryViewModel = hiltViewModel()
 ) {
-    val isLoading by addDiaryViewModel.isLoading.collectAsState()
-    val isTokenExpired by addDiaryViewModel.isTokenExpired.collectAsState()
     val uiMessageState by addDiaryViewModel.uiMessageState.collectAsState()
+    val addDiaryUiState by addDiaryViewModel.addDiaryUiState.collectAsState()
     val diaryText by addDiaryViewModel.diaryContent.collectAsState()
     val datePickerState = rememberDatePickerState(
         selectableDates = object : SelectableDates {
@@ -58,16 +59,23 @@ fun AddDiaryScreen(
     val context = LocalContext.current
 
     val selectedDate by addDiaryViewModel.selectedDateMillis.collectAsState()
-    LaunchedEffect(isTokenExpired) {
-        if (isTokenExpired) {
-            navController.safeNavigate(Route.Auth.route)
-        }
-    }
 
     LaunchedEffect(uiMessageState) {
-        if (uiMessageState.isNotEmpty()) {
-            Toast.makeText(context, uiMessageState, Toast.LENGTH_SHORT).show()
-            addDiaryViewModel.clearUiMessageState()
+        when (val state = uiMessageState) {
+            is UiMessage.Success -> {
+                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                addDiaryViewModel.clearUiMessageState()
+            }
+
+            is UiMessage.Error -> {
+                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                if (state.statusCode != null && state.statusCode == 401) {
+                    navController.safeNavigateWithClearingBackStack(Route.Auth.route)
+                }
+                addDiaryViewModel.clearUiMessageState()
+            }
+
+            else -> {}
         }
     }
 
@@ -98,7 +106,7 @@ fun AddDiaryScreen(
             }
         }
     ) { paddingValues ->
-        if (isLoading) {
+        if (addDiaryUiState is UiState.Loading) {
             LoadingCircular()
         }
 

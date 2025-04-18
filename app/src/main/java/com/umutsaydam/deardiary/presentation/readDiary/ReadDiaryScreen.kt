@@ -19,6 +19,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.umutsaydam.deardiary.R
+import com.umutsaydam.deardiary.domain.UiMessage
+import com.umutsaydam.deardiary.domain.UiState
 import com.umutsaydam.deardiary.domain.entity.DiaryEntity
 import com.umutsaydam.deardiary.presentation.common.BaseScaffold
 import com.umutsaydam.deardiary.presentation.common.BottomXRMenuWithGesture
@@ -26,7 +28,7 @@ import com.umutsaydam.deardiary.presentation.common.LoadingCircular
 import com.umutsaydam.deardiary.presentation.navigation.Route
 import com.umutsaydam.deardiary.util.DateFormatter
 import com.umutsaydam.deardiary.util.popBackStackOrIgnore
-import com.umutsaydam.deardiary.util.safeNavigate
+import com.umutsaydam.deardiary.util.safeNavigateWithClearingBackStack
 
 @Composable
 fun ReadDiaryScreen(
@@ -34,34 +36,42 @@ fun ReadDiaryScreen(
     diaryEntity: DiaryEntity,
     readDiaryViewModel: ReadDiaryViewModel = hiltViewModel()
 ) {
-    val diary by readDiaryViewModel.diary.collectAsState()
     val defaultFont = readDiaryViewModel.defaultFont.collectAsState().value
     val defaultSize = readDiaryViewModel.defaultSize.collectAsState().value
+    val readDiaryUiState = readDiaryViewModel.readDiaryUiState.collectAsState().value
     LaunchedEffect(Unit) { readDiaryViewModel.setDiary(diaryEntity) }
 
-    if (diary != null && defaultFont != null && defaultSize != null) {
-        val isLoading by readDiaryViewModel.isLoading.collectAsState()
-        val isTokenExpired by readDiaryViewModel.isTokenExpired.collectAsState()
+    if (readDiaryUiState is UiState.Loading) {
+        LoadingCircular()
+    }
+
+    if (readDiaryUiState is UiState.Success && defaultFont != null && defaultSize != null) {
         val uiMessageState by readDiaryViewModel.uiMessageState.collectAsState()
         val selectedIndex by readDiaryViewModel.diaryEmotion.collectAsState()
         val diaryContent by readDiaryViewModel.diaryContent.collectAsState()
         val context = LocalContext.current
 
-        LaunchedEffect(isTokenExpired) {
-            if (isTokenExpired) {
-                navController.safeNavigate(Route.Auth.route)
-            }
-        }
-
         LaunchedEffect(uiMessageState) {
-            if (uiMessageState.isNotEmpty()) {
-                Toast.makeText(context, uiMessageState, Toast.LENGTH_SHORT).show()
-                readDiaryViewModel.clearUiMessageState()
+            when (val state = uiMessageState) {
+                is UiMessage.Success -> {
+                    Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                    readDiaryViewModel.clearUiMessageState()
+                }
+
+                is UiMessage.Error -> {
+                    Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                    if (state.statusCode != null && state.statusCode == 401) {
+                        navController.safeNavigateWithClearingBackStack(Route.Auth.route)
+                    }
+                    readDiaryViewModel.clearUiMessageState()
+                }
+
+                else -> {}
             }
         }
 
         BaseScaffold(
-            title = DateFormatter.formatForUi(diary!!.diaryDate!!),
+            title = DateFormatter.formatForUi(readDiaryUiState.data!!.diaryDate!!),
             topActions = {
                 IconButton(
                     onClick = { readDiaryViewModel.update() },
@@ -85,10 +95,6 @@ fun ReadDiaryScreen(
                 }
             }
         ) { paddingValues ->
-            if (isLoading) {
-                LoadingCircular()
-            }
-
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()

@@ -1,5 +1,6 @@
 package com.umutsaydam.deardiary.data.remote.repository
 
+import android.util.Log
 import com.umutsaydam.deardiary.data.remote.DearDiaryApiService
 import com.umutsaydam.deardiary.data.remote.dto.DiaryDto
 import com.umutsaydam.deardiary.data.remote.mapper.DiaryMapper.toDto
@@ -18,6 +19,7 @@ class DiaryRepositoryImpl @Inject constructor(
     override suspend fun getAllDiaries(): Resource<List<DiaryEntity>> {
         val response = dearDiaryApiService.getDiaries()
         // 401 Token is wrong or expired.
+        // 403 Diary already added.
         // 200 List<DiaryEntity>.
 
 
@@ -28,6 +30,8 @@ class DiaryRepositoryImpl @Inject constructor(
             }
         } else if (response.code() == 401) {
             return Resource.Error(401, "You need to resign in.")
+        }else if(response.code() == 403){
+            return Resource.Error(401, response.message())
         }
         return Resource.Error()
     }
@@ -65,13 +69,13 @@ class DiaryRepositoryImpl @Inject constructor(
         // 401 Token is wrong or expired.
         // 404 Diary not found.
         // 200 DiaryEntity.
-
+        Log.i("R/T", "Stats: ${response.code()}")
         if (response.code() == 200) {
             response.body()?.let {
                 return Resource.Success(it.toEntity())
             }
         } else if (response.code() == 401) {
-            return Resource.Error(response.code(), response.message())
+            return Resource.Error(response.code(), "You need to resign in.")
         } else if (response.code() == 404) {
             return Resource.Error(response.code(), response.message())
         }
