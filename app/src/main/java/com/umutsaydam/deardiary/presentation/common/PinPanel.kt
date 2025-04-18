@@ -8,6 +8,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
@@ -22,6 +24,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.util.Constants.PIN_LENGTH
+import kotlinx.coroutines.delay
 
 @Composable
 fun PinPanel(
@@ -29,9 +32,14 @@ fun PinPanel(
     pin: List<Int>,
     maxLength: Int,
     pinText: String,
-    focusRequester: FocusRequester,
     onValueChange: (String) -> Unit
 ) {
+    val localFocusRequester = remember { FocusRequester() }
+    LaunchedEffect(Unit) {
+        delay(300)
+        localFocusRequester.requestFocus()
+    }
+
     Row {
         (0 until PIN_LENGTH).forEach {
             Icon(
@@ -56,7 +64,7 @@ fun PinPanel(
             keyboardType = KeyboardType.NumberPassword
         ),
         modifier = Modifier
-            .focusRequester(focusRequester)
+            .focusRequester(localFocusRequester)
             .onPreviewKeyEvent {
                 if (it.type == KeyEventType.KeyDown && it.key == Key.Backspace) {
                     if (pinText.isNotEmpty()) {

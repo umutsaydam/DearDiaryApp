@@ -26,14 +26,12 @@ import com.umutsaydam.deardiary.presentation.common.BaseScaffold
 import com.umutsaydam.deardiary.presentation.common.PinPanel
 import com.umutsaydam.deardiary.util.Constants.PIN_LENGTH
 import com.umutsaydam.deardiary.util.popBackStackOrIgnore
-import kotlinx.coroutines.delay
 
 @Composable
 fun SetPinScreen(
     navController: NavHostController,
     pinSettingsViewModel: PinSettingsViewModel = hiltViewModel()
 ) {
-    val focusRequester = remember { FocusRequester() }
     val pinText = pinSettingsViewModel.pinText.collectAsState()
     val pin = pinText.value.map { it.toString().toInt() }
     val pinTextConfirm = pinSettingsViewModel.pinTextConfirm.collectAsState()
@@ -48,11 +46,6 @@ fun SetPinScreen(
             Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
             pinSettingsViewModel.clearUiMessageState()
         }
-    }
-
-    LaunchedEffect(pinState) {
-        delay(300)
-        focusRequester.requestFocus()
     }
 
     pinState?.let {
@@ -86,7 +79,6 @@ fun SetPinScreen(
                             pin = pin,
                             maxLength = maxLength,
                             pinText = pinText.value,
-                            focusRequester = focusRequester,
                             onValueChange = { value ->
                                 pinSettingsViewModel.updatePinText(value)
                             }
@@ -98,7 +90,6 @@ fun SetPinScreen(
                             pin = pin,
                             maxLength = maxLength,
                             pinText = pinText.value,
-                            focusRequester = focusRequester,
                             onValueChange = { value ->
                                 pinSettingsViewModel.updatePinText(value)
                             }
@@ -110,7 +101,6 @@ fun SetPinScreen(
                             pin = pinConfirm,
                             maxLength = maxLength,
                             pinText = pinTextConfirm.value,
-                            focusRequester = focusRequester,
                             onValueChange = { value ->
                                 pinSettingsViewModel.updatePinTextConfirm(value)
                             }

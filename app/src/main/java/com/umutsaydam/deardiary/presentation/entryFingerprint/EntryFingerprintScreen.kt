@@ -26,6 +26,7 @@ import com.umutsaydam.deardiary.presentation.common.BaseScaffold
 import com.umutsaydam.deardiary.presentation.common.BiometricManagerLaunchEffect
 import com.umutsaydam.deardiary.presentation.navigation.Route
 import com.umutsaydam.deardiary.util.safeNavigate
+import com.umutsaydam.deardiary.util.safeNavigateWithClearingBackStack
 
 @Composable
 fun EntryFingerprintScreen(
@@ -44,7 +45,7 @@ fun EntryFingerprintScreen(
 
     BiometricManagerLaunchEffect(
         onSuccess = {
-            navController.safeNavigate(Route.Diaries.route)
+            navController.safeNavigateWithClearingBackStack(Route.Diaries.route)
         },
         onFailed = {},
         onSensorError = { message ->

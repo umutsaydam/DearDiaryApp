@@ -9,12 +9,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -26,7 +23,7 @@ import com.umutsaydam.deardiary.presentation.navigation.Route
 import com.umutsaydam.deardiary.util.Constants.PIN_LENGTH
 import com.umutsaydam.deardiary.util.popBackStackOrIgnore
 import com.umutsaydam.deardiary.util.safeNavigate
-import kotlinx.coroutines.delay
+import com.umutsaydam.deardiary.util.safeNavigateWithClearingBackStack
 
 @Composable
 fun EntryPinScreen(
@@ -37,12 +34,6 @@ fun EntryPinScreen(
     val pinState = entryPinScreenViewModel.pinState.collectAsState().value
     val enteredPin = entryPinScreenViewModel.enteredPin.collectAsState().value
     val pinList = enteredPin.map { it.toString().toInt() }
-    val focusRequester = remember { FocusRequester() }
-
-    LaunchedEffect(Unit) {
-        delay(300)
-        focusRequester.requestFocus()
-    }
 
     BaseScaffold(
         navigation = {
@@ -77,7 +68,6 @@ fun EntryPinScreen(
                             pin = pinList,
                             maxLength = PIN_LENGTH,
                             pinText = enteredPin,
-                            focusRequester = focusRequester,
                             onValueChange = { value ->
                                 entryPinScreenViewModel.updateEnteredPin(value)
                             }
@@ -86,7 +76,7 @@ fun EntryPinScreen(
                     }
 
                     PinStateEnum.DONE -> {
-                        navController.safeNavigate(Route.Diaries.route)
+                        navController.safeNavigateWithClearingBackStack(Route.Diaries.route)
                     }
 
                     else -> {}
