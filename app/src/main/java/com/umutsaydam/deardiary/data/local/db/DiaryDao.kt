@@ -22,4 +22,14 @@ interface DiaryDao {
 
     @Query("SELECT * FROM user_diary ORDER BY diary_date DESC")
     fun getDiaries(): Flow<List<DiaryEntity>>
+
+    @Query(
+        """
+            SELECT * FROM user_diary 
+            WHERE diary_content LIKE '%' || :query || '%' 
+               OR diary_date LIKE '%' || :query || '%' 
+            ORDER BY diary_date DESC
+        """
+    )
+    fun searchDiaries(query: String): Flow<List<DiaryEntity>>
 }

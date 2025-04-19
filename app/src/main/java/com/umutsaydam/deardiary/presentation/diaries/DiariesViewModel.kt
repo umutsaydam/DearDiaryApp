@@ -12,6 +12,7 @@ import com.umutsaydam.deardiary.domain.useCases.local.diaryRoomUseCase.DeleteDia
 import com.umutsaydam.deardiary.domain.useCases.remote.diaryServerUseCase.GetDiariesServerUseCase
 import com.umutsaydam.deardiary.domain.useCases.local.diaryRoomUseCase.GetDiariesRoomUseCase
 import com.umutsaydam.deardiary.domain.useCases.local.diaryRoomUseCase.InsertAllDiariesRoomUseCase
+import com.umutsaydam.deardiary.domain.useCases.local.diaryRoomUseCase.SearchDiaryRoomUseCase
 import com.umutsaydam.deardiary.domain.useCases.local.fontFamilyAndSizeUseCase.GetFontFamilyUseCase
 import com.umutsaydam.deardiary.domain.useCases.remote.diaryServerUseCase.DeleteDiaryServerUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -28,7 +29,8 @@ class DiariesViewModel @Inject constructor(
     private val getDiariesServerUseCase: GetDiariesServerUseCase,
     private val insertAllDiariesRoomUseCase: InsertAllDiariesRoomUseCase,
     private val deleteDiaryServerUseCase: DeleteDiaryServerUseCase,
-    private val deleteDiariesRoomUseCase: DeleteDiaryRoomUseCase
+    private val deleteDiariesRoomUseCase: DeleteDiaryRoomUseCase,
+    private val searchDiaryRoomUseCase: SearchDiaryRoomUseCase
 ) : ViewModel() {
 
     private val _defaultFont = MutableStateFlow<GenericFontFamily?>(null)
@@ -39,6 +41,9 @@ class DiariesViewModel @Inject constructor(
 
     private val _uiMessageState = MutableStateFlow<UiMessage?>(null)
     val uiMessageState: StateFlow<UiMessage?> = _uiMessageState
+
+    private val _uiSearchButtonState = MutableStateFlow(false)
+    val uiSearchButtonState: StateFlow<Boolean> = _uiSearchButtonState
 
     init {
         getDefaultFont()
@@ -104,6 +109,22 @@ class DiariesViewModel @Inject constructor(
         viewModelScope.launch {
             _defaultFont.value =
                 FontFamilySealed.fromLabel(getFontFamilyUseCase().first()).fontFamily
+        }
+    }
+
+    fun toggleSearchButtonState() {
+        _uiSearchButtonState.value = !_uiSearchButtonState.value
+        if (!_uiSearchButtonState.value) {
+            getDiariesFromRoom()
+        }
+    }
+
+    fun onSearchQueryChanged(query: String) {
+        viewModelScope.launch {
+            _diariesUiState.value = UiState.Loading
+            searchDiaryRoomUseCase(query).collect { resultDiaryEntity ->
+                _diariesUiState.value = UiState.Success(resultDiaryEntity)
+            }
         }
     }
 

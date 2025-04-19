@@ -2,9 +2,12 @@ package com.umutsaydam.deardiary.presentation.diaries
 
 import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -12,6 +15,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -20,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -47,10 +53,15 @@ fun DiariesScreen(
     val defaultFont = diariesViewModel.defaultFont.collectAsState().value
     val diariesUiState by diariesViewModel.diariesUiState.collectAsState()
     val uiMessageState by diariesViewModel.uiMessageState.collectAsState()
+    val uiSearchButtonState by diariesViewModel.uiSearchButtonState.collectAsState()
 
     val context = LocalContext.current
     var isDeleteDialogOpen by remember { mutableStateOf(false) }
     var selectedDiaryEntity: DiaryEntity? by remember { mutableStateOf(null) }
+
+    if (uiSearchButtonState) {
+        BackHandler { diariesViewModel.toggleSearchButtonState() }
+    }
 
     LaunchedEffect(uiMessageState) {
         when (val state = uiMessageState) {
@@ -72,16 +83,26 @@ fun DiariesScreen(
     }
 
     BaseScaffold(
-        title = "Diaries",
+        title = {
+            if (uiSearchButtonState) {
+                var searchText by remember { mutableStateOf("") }
+                SearchTextField(
+                    value = searchText,
+                    onValueChange = { value ->
+                        searchText = value
+                        diariesViewModel.onSearchQueryChanged(value)
+                    }
+                )
+            } else {
+                Text("Diaries")
+            }
+        },
         topActions = {
             IconButton(
-                onClick = {
-
-                },
-
-                ) {
+                onClick = { diariesViewModel.toggleSearchButtonState() }
+            ) {
                 Icon(
-                    imageVector = Icons.Default.Search,
+                    imageVector = if (uiSearchButtonState) Icons.Default.Clear else Icons.Default.Search,
                     contentDescription = "Search in diaries"
                 )
             }
@@ -144,6 +165,26 @@ fun DiariesScreen(
             )
         }
     }
+}
+
+@Composable
+fun SearchTextField(value: String, onValueChange: (String) -> Unit) {
+    TextField(
+        value = value,
+        onValueChange = { newValue -> onValueChange(newValue) },
+        placeholder = { Text("Search...") },
+        singleLine = true,
+        modifier = Modifier.fillMaxWidth(),
+        colors = TextFieldDefaults.colors(
+            focusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent
+        ),
+        textStyle = MaterialTheme.typography.bodyMedium
+    )
 }
 
 @Composable
