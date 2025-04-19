@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
+import com.umutsaydam.deardiary.data.NetworkConnectivityObserver
 import com.umutsaydam.deardiary.data.local.dataStore.TokenManagerImpl
 import com.umutsaydam.deardiary.data.local.dataStore.UserPreferencesManagerImpl
 import com.umutsaydam.deardiary.data.local.db.DearDiaryDB
@@ -16,6 +17,7 @@ import com.umutsaydam.deardiary.data.remote.DearDiaryApiService
 import com.umutsaydam.deardiary.data.remote.repository.DiaryRepositoryImpl
 import com.umutsaydam.deardiary.data.remote.repository.InsightsRepositoryImpl
 import com.umutsaydam.deardiary.data.remote.repository.UserRepositoryImpl
+import com.umutsaydam.deardiary.domain.ConnectivityObserver
 import com.umutsaydam.deardiary.domain.manager.TokenManager
 import com.umutsaydam.deardiary.domain.manager.UserPreferencesManager
 import com.umutsaydam.deardiary.domain.notification.ReminderScheduler
@@ -32,6 +34,12 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
+    @Provides
+    @Singleton
+    fun provideNetworkConnectivityObserver(
+        application: Application
+    ): ConnectivityObserver = NetworkConnectivityObserver(application)
 
     @Provides
     @Singleton
