@@ -1,7 +1,9 @@
 package com.umutsaydam.deardiary.data.remote
 
 import com.umutsaydam.deardiary.data.remote.dto.DiaryDto
+import com.umutsaydam.deardiary.data.remote.dto.DiaryEmotionDto
 import com.umutsaydam.deardiary.data.remote.dto.TokenDto
+import com.umutsaydam.deardiary.data.remote.dto.TotalInsightsDto
 import com.umutsaydam.deardiary.data.remote.dto.UserDto
 import retrofit2.Response
 import retrofit2.http.Body
@@ -10,6 +12,7 @@ import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 import java.util.UUID
 
 interface DearDiaryApiService {
@@ -37,4 +40,12 @@ interface DearDiaryApiService {
 
     @PATCH("diary/update-diary")
     suspend fun updateDiary(@Body diaryDto: DiaryDto): Response<DiaryDto>
+
+    @GET("statistics/total-diary-statistics")
+    suspend fun getTotalInsights(): Response<TotalInsightsDto>
+
+    @GET("statistics/total-emotion-statistics")
+    suspend fun getTotalEmotionInsights(
+        @Query("timeRange") timeRange: String
+    ): Response<List<DiaryEmotionDto>>
 }

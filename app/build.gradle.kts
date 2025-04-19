@@ -91,6 +91,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
     // Work Manager
     implementation(libs.androidx.work.runtime.ktx)
+    // MPAndroidChart
+    implementation(libs.mpandroidchart)
 }
 java {
     toolchain {

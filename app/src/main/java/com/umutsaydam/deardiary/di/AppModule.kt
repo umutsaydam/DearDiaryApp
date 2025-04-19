@@ -14,11 +14,13 @@ import com.umutsaydam.deardiary.data.local.db.DiaryDao
 import com.umutsaydam.deardiary.data.notification.ReminderSchedulerImpl
 import com.umutsaydam.deardiary.data.remote.DearDiaryApiService
 import com.umutsaydam.deardiary.data.remote.repository.DiaryRepositoryImpl
+import com.umutsaydam.deardiary.data.remote.repository.InsightsRepositoryImpl
 import com.umutsaydam.deardiary.data.remote.repository.UserRepositoryImpl
 import com.umutsaydam.deardiary.domain.manager.TokenManager
 import com.umutsaydam.deardiary.domain.manager.UserPreferencesManager
 import com.umutsaydam.deardiary.domain.notification.ReminderScheduler
 import com.umutsaydam.deardiary.domain.repository.DiaryRepository
+import com.umutsaydam.deardiary.domain.repository.InsightsRepository
 import com.umutsaydam.deardiary.domain.repository.UserRepository
 import dagger.Module
 import dagger.Provides
@@ -38,6 +40,11 @@ object AppModule {
             produceFile = { context.preferencesDataStoreFile("secure_datastore") }
         )
     }
+
+    @Provides
+    fun provideInsightsRepository(
+        dearDiaryApiService: DearDiaryApiService
+    ): InsightsRepository = InsightsRepositoryImpl(dearDiaryApiService)
 
     @Provides
     fun provideUserRepository(

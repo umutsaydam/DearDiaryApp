@@ -43,7 +43,6 @@ class DiariesViewModel @Inject constructor(
     init {
         getDefaultFont()
         getDiariesFromRoom()
-        getDiariesFromServer()
     }
 
     private fun getDiariesFromRoom() {
@@ -51,6 +50,7 @@ class DiariesViewModel @Inject constructor(
             _diariesUiState.value = UiState.Loading
             getDiariesRoomUseCase().collect { diaries ->
                 _diariesUiState.value = UiState.Success(diaries)
+                getDiariesFromServer()
             }
         }
     }
