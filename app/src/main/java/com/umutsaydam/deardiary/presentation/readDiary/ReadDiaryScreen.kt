@@ -8,6 +8,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -72,7 +73,7 @@ fun ReadDiaryScreen(
         }
 
         BaseScaffold(
-            title = DateFormatter.formatForUi(readDiaryUiState.data!!.diaryDate!!),
+            title = { Text(DateFormatter.formatForUi(readDiaryUiState.data!!.diaryDate!!)) },
             topActions = {
                 IconButton(
                     onClick = { readDiaryViewModel.update() },
