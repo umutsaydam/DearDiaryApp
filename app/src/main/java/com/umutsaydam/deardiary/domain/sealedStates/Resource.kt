@@ -1,4 +1,4 @@
-package com.umutsaydam.deardiary.domain
+package com.umutsaydam.deardiary.domain.sealedStates
 
 sealed class Resource<T>(
     val data: T? = null,

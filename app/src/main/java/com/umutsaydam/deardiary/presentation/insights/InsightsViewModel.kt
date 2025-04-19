@@ -3,10 +3,10 @@ package com.umutsaydam.deardiary.presentation.insights
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.mikephil.charting.data.RadarEntry
-import com.umutsaydam.deardiary.domain.InsightEmotionTimeState
-import com.umutsaydam.deardiary.domain.Resource
-import com.umutsaydam.deardiary.domain.UiMessage
-import com.umutsaydam.deardiary.domain.UiState
+import com.umutsaydam.deardiary.domain.sealedStates.InsightEmotionTimeState
+import com.umutsaydam.deardiary.domain.sealedStates.Resource
+import com.umutsaydam.deardiary.domain.sealedStates.UiMessage
+import com.umutsaydam.deardiary.domain.sealedStates.UiState
 import com.umutsaydam.deardiary.domain.entity.DiaryEmotionEntity
 import com.umutsaydam.deardiary.domain.entity.TotalInsightsEntity
 import com.umutsaydam.deardiary.domain.entity.emotionList

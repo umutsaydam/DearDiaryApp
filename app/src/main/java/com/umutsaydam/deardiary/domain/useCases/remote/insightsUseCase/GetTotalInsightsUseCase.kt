@@ -1,6 +1,6 @@
 package com.umutsaydam.deardiary.domain.useCases.remote.insightsUseCase
 
-import com.umutsaydam.deardiary.domain.Resource
+import com.umutsaydam.deardiary.domain.sealedStates.Resource
 import com.umutsaydam.deardiary.domain.entity.TotalInsightsEntity
 import com.umutsaydam.deardiary.domain.repository.InsightsRepository
 import javax.inject.Inject

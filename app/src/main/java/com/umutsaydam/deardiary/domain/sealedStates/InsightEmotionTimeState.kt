@@ -1,4 +1,4 @@
-package com.umutsaydam.deardiary.domain
+package com.umutsaydam.deardiary.domain.sealedStates
 
 sealed class InsightEmotionTimeState(val insightContent: String, val insightParam: String) {
     data object AllTime : InsightEmotionTimeState("All time", "all")

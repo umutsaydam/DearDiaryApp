@@ -2,11 +2,10 @@ package com.umutsaydam.deardiary.data.remote.repository
 
 import android.util.Log
 import com.umutsaydam.deardiary.data.remote.DearDiaryApiService
-import com.umutsaydam.deardiary.data.remote.dto.DiaryDto
 import com.umutsaydam.deardiary.data.remote.mapper.DiaryMapper.toDto
 import com.umutsaydam.deardiary.data.remote.mapper.DiaryMapper.toEntity
 import com.umutsaydam.deardiary.data.remote.mapper.DiaryMapper.toNullUuidDto
-import com.umutsaydam.deardiary.domain.Resource
+import com.umutsaydam.deardiary.domain.sealedStates.Resource
 import com.umutsaydam.deardiary.domain.entity.DiaryEntity
 import com.umutsaydam.deardiary.domain.repository.DiaryRepository
 import java.util.UUID

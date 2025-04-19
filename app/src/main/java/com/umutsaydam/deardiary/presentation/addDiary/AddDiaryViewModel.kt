@@ -2,9 +2,9 @@ package com.umutsaydam.deardiary.presentation.addDiary
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.umutsaydam.deardiary.domain.Resource
-import com.umutsaydam.deardiary.domain.UiMessage
-import com.umutsaydam.deardiary.domain.UiState
+import com.umutsaydam.deardiary.domain.sealedStates.Resource
+import com.umutsaydam.deardiary.domain.sealedStates.UiMessage
+import com.umutsaydam.deardiary.domain.sealedStates.UiState
 import com.umutsaydam.deardiary.domain.entity.DiaryEntity
 import com.umutsaydam.deardiary.domain.useCases.local.diaryRoomUseCase.UpsertDiaryRoomUseCase
 import com.umutsaydam.deardiary.domain.useCases.remote.diaryServerUseCase.SaveDiaryServerUseCase

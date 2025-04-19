@@ -3,7 +3,7 @@ package com.umutsaydam.deardiary.data.remote.repository
 import com.umutsaydam.deardiary.data.remote.DearDiaryApiService
 import com.umutsaydam.deardiary.data.remote.mapper.TokenMapper.toEntity
 import com.umutsaydam.deardiary.data.remote.mapper.UserMapper.toDto
-import com.umutsaydam.deardiary.domain.Resource
+import com.umutsaydam.deardiary.domain.sealedStates.Resource
 import com.umutsaydam.deardiary.domain.entity.TokenEntity
 import com.umutsaydam.deardiary.domain.entity.UserEntity
 import com.umutsaydam.deardiary.domain.repository.UserRepository

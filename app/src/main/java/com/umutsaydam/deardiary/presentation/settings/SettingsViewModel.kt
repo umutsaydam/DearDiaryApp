@@ -3,7 +3,7 @@ package com.umutsaydam.deardiary.presentation.settings
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.umutsaydam.deardiary.domain.Resource
+import com.umutsaydam.deardiary.domain.sealedStates.Resource
 import com.umutsaydam.deardiary.domain.entity.FontFamilySealed
 import com.umutsaydam.deardiary.domain.entity.FontSizeSealed
 import com.umutsaydam.deardiary.domain.useCases.local.fontFamilyAndSizeUseCase.GetFontFamilyUseCase

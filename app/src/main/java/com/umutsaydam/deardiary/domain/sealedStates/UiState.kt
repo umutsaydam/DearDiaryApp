@@ -1,4 +1,4 @@
-package com.umutsaydam.deardiary.domain
+package com.umutsaydam.deardiary.domain.sealedStates
 
 sealed class UiState<out T> {
     data object Idle : UiState<Nothing>()

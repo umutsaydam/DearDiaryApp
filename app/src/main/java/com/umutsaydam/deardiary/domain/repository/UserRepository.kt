@@ -1,6 +1,6 @@
 package com.umutsaydam.deardiary.domain.repository
 
-import com.umutsaydam.deardiary.domain.Resource
+import com.umutsaydam.deardiary.domain.sealedStates.Resource
 import com.umutsaydam.deardiary.domain.entity.TokenEntity
 import com.umutsaydam.deardiary.domain.entity.UserEntity
 

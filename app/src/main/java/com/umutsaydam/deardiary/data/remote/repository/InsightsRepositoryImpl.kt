@@ -3,7 +3,7 @@ package com.umutsaydam.deardiary.data.remote.repository
 import com.umutsaydam.deardiary.data.remote.DearDiaryApiService
 import com.umutsaydam.deardiary.data.remote.mapper.DiaryEmotionMapper.toEntity
 import com.umutsaydam.deardiary.data.remote.mapper.TotalInsightsMapper.toEntity
-import com.umutsaydam.deardiary.domain.Resource
+import com.umutsaydam.deardiary.domain.sealedStates.Resource
 import com.umutsaydam.deardiary.domain.entity.DiaryEmotionEntity
 import com.umutsaydam.deardiary.domain.entity.TotalInsightsEntity
 import com.umutsaydam.deardiary.domain.repository.InsightsRepository

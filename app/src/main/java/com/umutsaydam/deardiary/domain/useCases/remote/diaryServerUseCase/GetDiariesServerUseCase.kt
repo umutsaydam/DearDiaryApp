@@ -1,6 +1,6 @@
 package com.umutsaydam.deardiary.domain.useCases.remote.diaryServerUseCase
 
-import com.umutsaydam.deardiary.domain.Resource
+import com.umutsaydam.deardiary.domain.sealedStates.Resource
 import com.umutsaydam.deardiary.domain.entity.DiaryEntity
 import com.umutsaydam.deardiary.domain.repository.DiaryRepository
 import javax.inject.Inject

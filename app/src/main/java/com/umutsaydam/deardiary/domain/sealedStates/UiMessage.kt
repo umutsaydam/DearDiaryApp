@@ -1,4 +1,4 @@
-package com.umutsaydam.deardiary.domain
+package com.umutsaydam.deardiary.domain.sealedStates
 
 sealed class UiMessage {
     data class Success(val message: String) : UiMessage()

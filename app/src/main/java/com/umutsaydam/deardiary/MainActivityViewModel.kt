@@ -2,7 +2,7 @@ package com.umutsaydam.deardiary
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.umutsaydam.deardiary.domain.Resource
+import com.umutsaydam.deardiary.domain.sealedStates.Resource
 import com.umutsaydam.deardiary.domain.useCases.local.securityUseCase.fingerPrint.IsFingerPrintEnabledUseCase
 import com.umutsaydam.deardiary.domain.useCases.local.securityUseCase.pin.GetPinUseCase
 import com.umutsaydam.deardiary.domain.useCases.remote.auth.TokenReusable

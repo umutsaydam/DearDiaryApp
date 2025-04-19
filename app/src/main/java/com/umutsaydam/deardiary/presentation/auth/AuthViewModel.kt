@@ -3,9 +3,9 @@ package com.umutsaydam.deardiary.presentation.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.umutsaydam.deardiary.domain.enums.AuthStateEnum
-import com.umutsaydam.deardiary.domain.Resource
-import com.umutsaydam.deardiary.domain.UiMessage
-import com.umutsaydam.deardiary.domain.UiState
+import com.umutsaydam.deardiary.domain.sealedStates.Resource
+import com.umutsaydam.deardiary.domain.sealedStates.UiMessage
+import com.umutsaydam.deardiary.domain.sealedStates.UiState
 import com.umutsaydam.deardiary.domain.entity.TokenEntity
 import com.umutsaydam.deardiary.domain.entity.UserEntity
 import com.umutsaydam.deardiary.domain.useCases.remote.auth.UserCreateUseCase

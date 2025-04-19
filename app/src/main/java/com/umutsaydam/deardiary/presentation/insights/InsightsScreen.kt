@@ -32,12 +32,12 @@ import com.github.mikephil.charting.charts.RadarChart
 import com.github.mikephil.charting.data.RadarData
 import com.github.mikephil.charting.data.RadarDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
-import com.umutsaydam.deardiary.domain.InsightEmotionTimeState
-import com.umutsaydam.deardiary.domain.UiMessage
-import com.umutsaydam.deardiary.domain.UiState
+import com.umutsaydam.deardiary.domain.sealedStates.InsightEmotionTimeState
+import com.umutsaydam.deardiary.domain.sealedStates.UiMessage
+import com.umutsaydam.deardiary.domain.sealedStates.UiState
 import com.umutsaydam.deardiary.domain.entity.TotalInsightsEntity
 import com.umutsaydam.deardiary.domain.entity.emotionList
-import com.umutsaydam.deardiary.domain.insightEmotionList
+import com.umutsaydam.deardiary.domain.sealedStates.insightEmotionList
 import com.umutsaydam.deardiary.presentation.common.BaseScaffold
 import com.umutsaydam.deardiary.presentation.common.LoadingCircular
 import com.umutsaydam.deardiary.presentation.common.MainNavigationAppBar
