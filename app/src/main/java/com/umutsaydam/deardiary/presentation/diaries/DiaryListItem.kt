@@ -29,6 +29,11 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.umutsaydam.deardiary.domain.entity.DiaryEntity
 import com.umutsaydam.deardiary.domain.entity.emotionList
+import com.umutsaydam.deardiary.presentation.Dimens.PaddingXSmall
+import com.umutsaydam.deardiary.presentation.Dimens.PaddingLarge
+import com.umutsaydam.deardiary.presentation.Dimens.SizeAvatarSmall
+import com.umutsaydam.deardiary.presentation.Dimens.StrokeMedium
+import com.umutsaydam.deardiary.presentation.Dimens.StrokeThin
 import com.umutsaydam.deardiary.util.DateFormatter
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -79,7 +84,7 @@ fun DrawTimeLine(
                 center = Offset(x = centerX, y = topCircleY),
                 radius = radius,
                 color = color,
-                style = Stroke(width = 2.dp.toPx())
+                style = Stroke(width = StrokeThin.toPx())
             )
         } else {
             drawCircle(
@@ -93,7 +98,7 @@ fun DrawTimeLine(
             start = Offset(x = centerX, y = topCircleY + radius),
             end = Offset(x = centerX, y = size.height),
             color = color,
-            strokeWidth = 5.dp.toPx()
+            strokeWidth = StrokeMedium.toPx()
         )
     }
 }
@@ -104,7 +109,7 @@ fun TimeLineContent(
     defaultFont: GenericFontFamily,
 ) {
     Column(
-        modifier = Modifier.padding(end = 5.dp)
+        modifier = Modifier.padding(end = PaddingXSmall)
     ) {
         Text(
             text = DateFormatter.formatForUi(diaryEntity.diaryDate!!),
@@ -126,7 +131,7 @@ fun TimeLineContent(
         )
 
         ShowMoodByIndex(
-            modifier = Modifier.padding(top = 15.dp),
+            modifier = Modifier.padding(top = PaddingLarge),
             diaryEmotion = diaryEntity.diaryEmotion!!
         )
     }
@@ -138,7 +143,7 @@ fun ShowMoodByIndex(modifier: Modifier = Modifier, diaryEmotion: Int) {
 
     LottieAnimation(
         modifier = modifier
-            .size(36.dp),
+            .size(SizeAvatarSmall),
         composition = composition,
         isPlaying = false
     )

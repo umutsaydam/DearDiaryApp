@@ -49,6 +49,9 @@ import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.domain.enums.AuthStateEnum
 import com.umutsaydam.deardiary.domain.sealedStates.UiMessage
 import com.umutsaydam.deardiary.domain.sealedStates.UiState
+import com.umutsaydam.deardiary.presentation.Dimens.PaddingXSmall
+import com.umutsaydam.deardiary.presentation.Dimens.PaddingMedium
+import com.umutsaydam.deardiary.presentation.Dimens.SpacingMedium
 import com.umutsaydam.deardiary.presentation.common.LoadingCircular
 import com.umutsaydam.deardiary.presentation.navigation.Route
 import com.umutsaydam.deardiary.util.safeNavigateWithClearingBackStack
@@ -124,7 +127,7 @@ fun AuthScreen(
             modifier = Modifier
                 .fillMaxWidth(formWidth)
                 .imePadding(),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(SpacingMedium),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             AuthOutlineText(
@@ -200,7 +203,7 @@ fun AuthScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = 5.dp),
+            .padding(bottom = PaddingXSmall),
         contentAlignment = Alignment.BottomCenter
     ) {
         ColorfulText(
@@ -274,7 +277,7 @@ fun ColorfulText(
     }
     Text(
         modifier = modifier
-            .padding(10.dp)
+            .padding(PaddingMedium)
             .clickable { onClick() },
         text = annotatedText,
         style = style,

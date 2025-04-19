@@ -48,6 +48,13 @@ import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.domain.entity.EmotionEntity
 import com.umutsaydam.deardiary.domain.entity.emotionList
 import com.umutsaydam.deardiary.domain.entity.templateList
+import com.umutsaydam.deardiary.presentation.Dimens.PaddingSmall
+import com.umutsaydam.deardiary.presentation.Dimens.PaddingLarge
+import com.umutsaydam.deardiary.presentation.Dimens.CornerSmall
+import com.umutsaydam.deardiary.presentation.Dimens.CornerMedium
+import com.umutsaydam.deardiary.presentation.Dimens.CornerXLarge
+import com.umutsaydam.deardiary.presentation.Dimens.SizeIconMedium
+import com.umutsaydam.deardiary.presentation.Dimens.SizeAvatarMedium
 import com.umutsaydam.deardiary.presentation.addDiary.diaryMood.DiaryMoodItem
 import com.umutsaydam.deardiary.presentation.addDiary.diaryTemplate.DiaryTemplateDialog
 import kotlinx.coroutines.launch
@@ -175,7 +182,7 @@ fun DairyMoodPopup(
                 modifier = Modifier
                     .width(300.dp)
                     .height(60.dp)
-                    .clip(RoundedCornerShape(10.dp))
+                    .clip(RoundedCornerShape(CornerSmall))
                     .background(MaterialTheme.colorScheme.surfaceContainer),
                 contentAlignment = Alignment.Center
             ) {
@@ -209,7 +216,7 @@ fun ShowEmotion(selectedIndex: Int) {
     Box(
         modifier = Modifier
             .offset(x = 0.dp, y = (-80).dp)
-            .clip(RoundedCornerShape(15.dp))
+            .clip(RoundedCornerShape(CornerMedium))
             .clickable {
                 scope.launch {
                     composition?.let {
@@ -224,7 +231,7 @@ fun ShowEmotion(selectedIndex: Int) {
         LottieAnimation(
             composition = composition,
             progress = animationState.progress,
-            modifier = Modifier.size(42.dp)
+            modifier = Modifier.size(SizeAvatarMedium)
         )
     }
 }
@@ -240,8 +247,8 @@ fun BottomXRMenu(
         modifier = modifier
             .width(300.dp)
             .height(80.dp)
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clip(RoundedCornerShape(32.dp))
+            .padding(horizontal = PaddingLarge, vertical = PaddingSmall)
+            .clip(RoundedCornerShape(CornerXLarge))
             .background(MaterialTheme.colorScheme.surfaceContainer)
     ) {
         NavigationBarItem(
@@ -252,7 +259,7 @@ fun BottomXRMenu(
                     painter = painterResource(R.drawable.ic_sticky_note_outline),
                     contentDescription = "Choose a diary template",
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(25.dp)
+                    modifier = Modifier.size(SizeIconMedium)
                 )
             },
             label = { Text("Templates") }
@@ -264,7 +271,7 @@ fun BottomXRMenu(
             icon = {
                 Icon(
                     modifier = Modifier
-                        .size(25.dp)
+                        .size(SizeIconMedium)
                         .pointerInput(Unit) {
                             awaitEachGesture {
                                 awaitFirstDown()

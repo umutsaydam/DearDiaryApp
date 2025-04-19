@@ -13,7 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.GenericFontFamily
-import androidx.compose.ui.unit.dp
+import com.umutsaydam.deardiary.presentation.Dimens.PaddingSmall
+import com.umutsaydam.deardiary.presentation.Dimens.CornerSmall
 
 @Composable
 fun FontSizeListItem(
@@ -26,7 +27,7 @@ fun FontSizeListItem(
 ) {
     Row(
         modifier = modifier
-            .clip(RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(CornerSmall))
             .fillMaxWidth()
             .background(
                 if (isSelected) MaterialTheme.colorScheme.surfaceContainerLowest
@@ -35,7 +36,7 @@ fun FontSizeListItem(
             .clickable {
                 onSelected(index)
             }
-            .padding(top = 8.dp, bottom = 8.dp, start = 8.dp)
+            .padding(top = PaddingSmall, bottom = PaddingSmall, start = PaddingSmall)
     ) {
         Text(
             text = "Dear diary, I am so happy.",

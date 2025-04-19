@@ -38,6 +38,9 @@ import com.umutsaydam.deardiary.domain.sealedStates.UiState
 import com.umutsaydam.deardiary.domain.entity.TotalInsightsEntity
 import com.umutsaydam.deardiary.domain.entity.emotionList
 import com.umutsaydam.deardiary.domain.sealedStates.insightEmotionList
+import com.umutsaydam.deardiary.presentation.Dimens.PaddingSmall
+import com.umutsaydam.deardiary.presentation.Dimens.PaddingLarge
+import com.umutsaydam.deardiary.presentation.Dimens.CornerMedium
 import com.umutsaydam.deardiary.presentation.common.BaseScaffold
 import com.umutsaydam.deardiary.presentation.common.LoadingCircular
 import com.umutsaydam.deardiary.presentation.common.MainNavigationAppBar
@@ -92,9 +95,9 @@ fun InsightsScreen(
         ) {
             Column(
                 modifier = Modifier
-                    .padding(15.dp)
-                    .shadow(8.dp, RoundedCornerShape(15.dp))
-                    .clip(RoundedCornerShape(15.dp))
+                    .padding(PaddingLarge)
+                    .shadow(8.dp, RoundedCornerShape(CornerMedium))
+                    .clip(RoundedCornerShape(CornerMedium))
                     .background(MaterialTheme.colorScheme.surfaceContainerLowest)
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -144,9 +147,9 @@ fun RadarChartWithSelectedButtons(
 
     Column(
         modifier = Modifier
-            .padding(15.dp)
-            .shadow(8.dp, RoundedCornerShape(15.dp))
-            .clip(RoundedCornerShape(15.dp))
+            .padding(PaddingLarge)
+            .shadow(8.dp, RoundedCornerShape(CornerMedium))
+            .clip(RoundedCornerShape(CornerMedium))
             .background(MaterialTheme.colorScheme.surfaceContainerLowest)
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -172,7 +175,7 @@ fun EmotionsRadarChart(
             .background(MaterialTheme.colorScheme.surfaceContainerLowest)
             .fillMaxWidth()
             .height(300.dp)
-            .padding(8.dp),
+            .padding(PaddingSmall),
         factory = {
             RadarChart(context).apply {
                 layoutParams = ViewGroup.LayoutParams(

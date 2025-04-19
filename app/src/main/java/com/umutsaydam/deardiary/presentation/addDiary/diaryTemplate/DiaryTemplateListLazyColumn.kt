@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.umutsaydam.deardiary.domain.entity.DiaryTemplateEntity
+import com.umutsaydam.deardiary.presentation.Dimens.SpacingSmall
 
 @Composable
 fun DiaryTemplateListLazyColumn(
@@ -18,7 +18,7 @@ fun DiaryTemplateListLazyColumn(
     LazyColumn(
         modifier = modifier
             .fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(SpacingSmall)
     ) {
         items(count = diaryTemplateEntityList.size, key = { it }) { index ->
             DiaryTemplateListItem(

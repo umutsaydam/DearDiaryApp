@@ -18,11 +18,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.domain.entity.FontFamilySealed
 import com.umutsaydam.deardiary.domain.entity.FontFamilySealed.Companion.fontFamilyList
 import com.umutsaydam.deardiary.domain.entity.FontSizeSealed
+import com.umutsaydam.deardiary.presentation.Dimens.PaddingSmall
 import com.umutsaydam.deardiary.presentation.common.BaseAlertDialog
 
 @Composable
@@ -102,7 +102,7 @@ fun FontSettingsDialog(
         },
         dismissButton = {
             TextButton(
-                modifier = Modifier.padding(end = 8.dp),
+                modifier = Modifier.padding(end = PaddingSmall),
                 onClick = { onDismissed() }
             ) {
                 Text(

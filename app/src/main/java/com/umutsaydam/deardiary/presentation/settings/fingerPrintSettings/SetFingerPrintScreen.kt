@@ -19,10 +19,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.umutsaydam.deardiary.R
+import com.umutsaydam.deardiary.presentation.Dimens.SizeIconSmall
+import com.umutsaydam.deardiary.presentation.Dimens.SizeImageLarge
 import com.umutsaydam.deardiary.presentation.common.BaseScaffold
 import com.umutsaydam.deardiary.presentation.common.BiometricManagerLaunchEffect
 import com.umutsaydam.deardiary.util.popBackStackOrIgnore
@@ -78,10 +79,10 @@ fun SetFingerPrintScreen(
             Icon(
                 painter = painterResource(R.drawable.ic_finger_print),
                 contentDescription = "Fingerprint",
-                modifier = Modifier.size(72.dp),
+                modifier = Modifier.size(SizeImageLarge),
                 tint = MaterialTheme.colorScheme.primary
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(SizeIconSmall))
             Text("Scan your fingerprint.", style = MaterialTheme.typography.titleMedium)
         }
     }

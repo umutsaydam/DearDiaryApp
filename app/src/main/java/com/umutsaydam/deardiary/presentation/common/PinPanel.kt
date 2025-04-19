@@ -21,8 +21,9 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
 import com.umutsaydam.deardiary.R
+import com.umutsaydam.deardiary.presentation.Dimens.PaddingSmall
+import com.umutsaydam.deardiary.presentation.Dimens.SizeIconLarge
 import com.umutsaydam.deardiary.util.Constants.PIN_LENGTH
 import kotlinx.coroutines.delay
 
@@ -44,8 +45,8 @@ fun PinPanel(
         (0 until PIN_LENGTH).forEach {
             Icon(
                 modifier = modifier
-                    .padding(8.dp)
-                    .size(28.dp),
+                    .padding(PaddingSmall)
+                    .size(SizeIconLarge),
                 painter = painterResource(if (it < pin.size) R.drawable.ic_circle_filled else R.drawable.ic_circle_outline),
                 contentDescription = "Pin",
                 tint = MaterialTheme.colorScheme.onSurfaceVariant

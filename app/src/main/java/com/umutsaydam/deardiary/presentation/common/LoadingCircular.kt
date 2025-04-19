@@ -7,7 +7,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import com.umutsaydam.deardiary.presentation.Dimens.SizeImageMedium
 
 @Composable
 fun LoadingCircular(modifier: Modifier = Modifier) {
@@ -15,6 +15,6 @@ fun LoadingCircular(modifier: Modifier = Modifier) {
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        CircularProgressIndicator(modifier = Modifier.size(64.dp))
+        CircularProgressIndicator(modifier = Modifier.size(SizeImageMedium))
     }
 }

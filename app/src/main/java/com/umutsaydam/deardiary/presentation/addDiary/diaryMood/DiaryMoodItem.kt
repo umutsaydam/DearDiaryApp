@@ -6,12 +6,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.unit.dp
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.umutsaydam.deardiary.domain.entity.EmotionEntity
+import com.umutsaydam.deardiary.presentation.Dimens.SizeAvatarMedium
 
 @Composable
 fun DiaryMoodItem(
@@ -24,7 +24,7 @@ fun DiaryMoodItem(
 
     LottieAnimation(
         modifier = modifier
-            .size(42.dp)
+            .size(SizeAvatarMedium)
             .graphicsLayer {
                 scaleX = scale
                 scaleY = scale

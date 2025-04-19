@@ -20,9 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.domain.entity.DiaryTemplateEntity
+import com.umutsaydam.deardiary.presentation.Dimens.PaddingSmall
+import com.umutsaydam.deardiary.presentation.Dimens.CornerSmall
+import com.umutsaydam.deardiary.presentation.Dimens.SizeIconLarge
 
 @Composable
 fun DiaryTemplateListItem(
@@ -34,10 +36,10 @@ fun DiaryTemplateListItem(
 ) {
     Row(
         modifier = modifier
-            .clip(RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(CornerSmall))
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surfaceContainerLow)
-            .padding(top = 8.dp, bottom = 8.dp, start = 8.dp)
+            .padding(top = PaddingSmall, bottom = PaddingSmall, start = PaddingSmall)
     ) {
         Column(
             modifier = Modifier.weight(0.4f)
@@ -68,7 +70,7 @@ fun DiaryTemplateListItem(
                 }
 
                 IconButton(
-                    modifier = Modifier.size(32.dp),
+                    modifier = Modifier.size(SizeIconLarge),
                     onClick = {
                         onInfoSelected(index)
                     },

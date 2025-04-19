@@ -33,6 +33,9 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.umutsaydam.deardiary.R
+import com.umutsaydam.deardiary.presentation.Dimens.PaddingSmall
+import com.umutsaydam.deardiary.presentation.Dimens.PaddingLarge
+import com.umutsaydam.deardiary.presentation.Dimens.CornerSmall
 import com.umutsaydam.deardiary.presentation.common.BaseAlertDialog
 import com.umutsaydam.deardiary.presentation.common.BaseListItem
 import com.umutsaydam.deardiary.presentation.common.BaseScaffold
@@ -83,7 +86,7 @@ fun SettingsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(
-                    top = paddingValues.calculateTopPadding() + 8.dp,
+                    top = paddingValues.calculateTopPadding() + PaddingSmall,
                     bottom = paddingValues.calculateBottomPadding()
                 )
         ) {
@@ -200,7 +203,7 @@ fun showLogoutDialog(
         },
         dismissButton = {
             TextButton(
-                modifier = Modifier.padding(end = 8.dp),
+                modifier = Modifier.padding(end = PaddingSmall),
                 onClick = { onConfirm() }
             ) { Text(text = "Cancel", color = MaterialTheme.colorScheme.primary) }
         }
@@ -221,7 +224,7 @@ fun ReminderTimePicker(
         Column(
             modifier = Modifier
                 .padding(horizontal = 12.dp)
-                .clip(RoundedCornerShape(10.dp))
+                .clip(RoundedCornerShape(CornerSmall))
                 .background(
                     MaterialTheme.colorScheme.surface
                 )
@@ -229,7 +232,7 @@ fun ReminderTimePicker(
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(PaddingLarge),
                 text = "Select time"
             )
             Row(
@@ -245,7 +248,7 @@ fun ReminderTimePicker(
                 horizontalArrangement = Arrangement.End
             ) {
                 TextButton(
-                    modifier = Modifier.padding(end = 8.dp),
+                    modifier = Modifier.padding(end = PaddingSmall),
                     onClick = { onDismissed() }
                 ) {
                     Text(
@@ -255,7 +258,7 @@ fun ReminderTimePicker(
                 }
 
                 TextButton(
-                    modifier = Modifier.padding(end = 8.dp),
+                    modifier = Modifier.padding(end = PaddingSmall),
                     onClick = {
                         onSelected(timePickerState.hour, timePickerState.minute)
                         onDismissed()

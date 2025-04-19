@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.GenericFontFamily
-import androidx.compose.ui.unit.dp
+import com.umutsaydam.deardiary.presentation.Dimens.SpacingSmall
 
 @Composable
 fun FontSizeListLazyColumn(
@@ -20,7 +20,7 @@ fun FontSizeListLazyColumn(
     LazyColumn(
         modifier = modifier
             .fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(SpacingSmall)
     ) {
         items(count = textStyleList.size, key = { it }) { index ->
             FontSizeListItem(
