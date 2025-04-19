@@ -59,6 +59,8 @@ class AddDiaryViewModel @Inject constructor(
                     result.data?.let {
                         saveDiaryRoomUseCase(it)
                         _addDiaryUiState.value = UiState.Success(it)
+                        _uiMessageState.value =
+                            UiMessage.Success("Your diary was added successfully.")
                     }
                 }
 
