@@ -46,7 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.umutsaydam.deardiary.R
-import com.umutsaydam.deardiary.domain.AuthStateEnum
+import com.umutsaydam.deardiary.domain.enums.AuthStateEnum
 import com.umutsaydam.deardiary.domain.UiMessage
 import com.umutsaydam.deardiary.domain.UiState
 import com.umutsaydam.deardiary.presentation.common.LoadingCircular

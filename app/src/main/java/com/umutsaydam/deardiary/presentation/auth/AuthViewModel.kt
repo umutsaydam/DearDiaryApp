@@ -2,7 +2,7 @@ package com.umutsaydam.deardiary.presentation.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.umutsaydam.deardiary.domain.AuthStateEnum
+import com.umutsaydam.deardiary.domain.enums.AuthStateEnum
 import com.umutsaydam.deardiary.domain.Resource
 import com.umutsaydam.deardiary.domain.UiMessage
 import com.umutsaydam.deardiary.domain.UiState

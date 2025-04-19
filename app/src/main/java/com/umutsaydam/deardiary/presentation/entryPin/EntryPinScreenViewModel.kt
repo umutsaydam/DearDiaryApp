@@ -2,7 +2,7 @@ package com.umutsaydam.deardiary.presentation.entryPin
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.umutsaydam.deardiary.domain.PinStateEnum
+import com.umutsaydam.deardiary.domain.enums.PinStateEnum
 import com.umutsaydam.deardiary.domain.useCases.local.securityUseCase.pin.GetPinUseCase
 import com.umutsaydam.deardiary.util.Constants.PIN_LENGTH
 import dagger.hilt.android.lifecycle.HiltViewModel
