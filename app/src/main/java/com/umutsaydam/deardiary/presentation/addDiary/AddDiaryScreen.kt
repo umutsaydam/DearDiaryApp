@@ -81,7 +81,7 @@ fun AddDiaryScreen(
     }
 
     BaseScaffold(
-        title = "Write a diary",
+        title = { Text("Write a diary") },
         topActions = {
             IconButton(
                 onClick = {

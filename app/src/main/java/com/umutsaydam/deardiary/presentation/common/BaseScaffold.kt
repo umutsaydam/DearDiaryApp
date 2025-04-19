@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.Color
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BaseScaffold(
-    title: String = "",
+    title: @Composable () -> Unit,
     topActions: @Composable RowScope.() -> Unit = {},
     navigation: @Composable () -> Unit = {},
     fabContent: @Composable () -> Unit = {},
@@ -30,7 +30,7 @@ fun BaseScaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                title = { Text(title) },
+                title = title,
                 actions = topActions,
                 navigationIcon = navigation,
                 colors = TopAppBarDefaults.topAppBarColors().copy(

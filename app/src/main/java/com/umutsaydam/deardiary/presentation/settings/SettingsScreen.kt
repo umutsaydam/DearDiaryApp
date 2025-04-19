@@ -74,7 +74,7 @@ fun SettingsScreen(
     }
 
     BaseScaffold(
-        title = "Diaries",
+        title = { Text("Diaries") },
         bottomBar = {
             MainNavigationAppBar(navController)
         }
