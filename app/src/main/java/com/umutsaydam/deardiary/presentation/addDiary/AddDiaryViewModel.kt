@@ -6,6 +6,7 @@ import com.umutsaydam.deardiary.domain.sealedStates.Resource
 import com.umutsaydam.deardiary.domain.sealedStates.UiMessage
 import com.umutsaydam.deardiary.domain.sealedStates.UiState
 import com.umutsaydam.deardiary.domain.entity.DiaryEntity
+import com.umutsaydam.deardiary.domain.useCases.IsInternetAvailableUseCase
 import com.umutsaydam.deardiary.domain.useCases.local.diaryRoomUseCase.UpsertDiaryRoomUseCase
 import com.umutsaydam.deardiary.domain.useCases.remote.diaryServerUseCase.SaveDiaryServerUseCase
 import com.umutsaydam.deardiary.util.DateFormatter
@@ -19,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AddDiaryViewModel @Inject constructor(
     private val saveDiaryServerUseCase: SaveDiaryServerUseCase,
-    private val saveDiaryRoomUseCase: UpsertDiaryRoomUseCase
+    private val saveDiaryRoomUseCase: UpsertDiaryRoomUseCase,
+    private val isInternetAvailableUseCase: IsInternetAvailableUseCase
 ) : ViewModel() {
 
     private val _uiMessageState = MutableStateFlow<UiMessage?>(null)
@@ -44,35 +46,40 @@ class AddDiaryViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            _addDiaryUiState.value = UiState.Loading
+            if(isInternetAvailableUseCase()){
+                _addDiaryUiState.value = UiState.Loading
 
-            val result = saveDiaryServerUseCase(
-                DiaryEntity(
-                    diaryContent = diaryContent.value.trim(),
-                    diaryDate = DateFormatter.formatForSelectedDateForServer(_selectedDateMillis.value),
-                    diaryEmotion = _diaryEmotion.value
-                )
-            )
-
-            when (result) {
-                is Resource.Success -> {
-                    result.data?.let {
-                        saveDiaryRoomUseCase(it)
-                        _addDiaryUiState.value = UiState.Success(it)
-                        _uiMessageState.value =
-                            UiMessage.Success("Your diary was added successfully.")
-                    }
-                }
-
-                is Resource.Error -> {
-                    _uiMessageState.value = UiMessage.Error(
-                        message = result.message ?: "Something went wrong.",
-                        statusCode = result.status
+                val result = saveDiaryServerUseCase(
+                    DiaryEntity(
+                        diaryContent = diaryContent.value.trim(),
+                        diaryDate = DateFormatter.formatForSelectedDateForServer(_selectedDateMillis.value),
+                        diaryEmotion = _diaryEmotion.value
                     )
-                    _addDiaryUiState.value = UiState.Idle
-                }
+                )
 
-                is Resource.Loading -> {}
+                when (result) {
+                    is Resource.Success -> {
+                        result.data?.let {
+                            saveDiaryRoomUseCase(it)
+                            _addDiaryUiState.value = UiState.Success(it)
+                            _uiMessageState.value =
+                                UiMessage.Success("Your diary was added successfully.")
+                        }
+                    }
+
+                    is Resource.Error -> {
+                        _uiMessageState.value = UiMessage.Error(
+                            message = result.message ?: "Something went wrong.",
+                            statusCode = result.status
+                        )
+                        _addDiaryUiState.value = UiState.Idle
+                    }
+
+                    is Resource.Loading -> {}
+                }
+            }else{
+                _uiMessageState.value =
+                    UiMessage.Error("No internet connection.")
             }
         }
     }

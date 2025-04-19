@@ -9,6 +9,7 @@ import com.umutsaydam.deardiary.domain.sealedStates.UiState
 import com.umutsaydam.deardiary.domain.entity.DiaryEntity
 import com.umutsaydam.deardiary.domain.entity.FontFamilySealed
 import com.umutsaydam.deardiary.domain.entity.FontSizeSealed
+import com.umutsaydam.deardiary.domain.useCases.IsInternetAvailableUseCase
 import com.umutsaydam.deardiary.domain.useCases.local.diaryRoomUseCase.UpsertDiaryRoomUseCase
 import com.umutsaydam.deardiary.domain.useCases.local.fontFamilyAndSizeUseCase.GetFontFamilyUseCase
 import com.umutsaydam.deardiary.domain.useCases.local.fontFamilyAndSizeUseCase.GetFontSizeUseCase
@@ -25,7 +26,8 @@ class ReadDiaryViewModel @Inject constructor(
     private val getFontFamilyUseCase: GetFontFamilyUseCase,
     private val getFontSizeUseCase: GetFontSizeUseCase,
     private val updateDiaryServerUseCase: UpdateDiaryServerUseCase,
-    private val upsertDiaryRoomUseCase: UpsertDiaryRoomUseCase
+    private val upsertDiaryRoomUseCase: UpsertDiaryRoomUseCase,
+    private val isInternetAvailableUseCase: IsInternetAvailableUseCase
 ) : ViewModel() {
 
     private val _defaultFont = MutableStateFlow<GenericFontFamily?>(null)
@@ -70,30 +72,35 @@ class ReadDiaryViewModel @Inject constructor(
                 return
             }
 
-            viewModelScope.launch {
-                _readDiaryUiState.value = UiState.Loading
-                it.diaryContent = _diaryContent.value!!
-                it.diaryEmotion = _diaryEmotion.value!!
-                when (val result = updateDiaryServerUseCase(it)) {
-                    is Resource.Success -> {
-                        result.data?.let { newDiary ->
-                            setDiary(newDiary)
-                            upsertDiaryRoomUseCase(newDiary)
-                            _uiMessageState.value =
-                                UiMessage.Success("Diary updated successfully.")
+            if (isInternetAvailableUseCase()) {
+                viewModelScope.launch {
+                    _readDiaryUiState.value = UiState.Loading
+                    it.diaryContent = _diaryContent.value!!
+                    it.diaryEmotion = _diaryEmotion.value!!
+                    when (val result = updateDiaryServerUseCase(it)) {
+                        is Resource.Success -> {
+                            result.data?.let { newDiary ->
+                                setDiary(newDiary)
+                                upsertDiaryRoomUseCase(newDiary)
+                                _uiMessageState.value =
+                                    UiMessage.Success("Diary updated successfully.")
+                            }
                         }
-                    }
 
-                    is Resource.Error -> {
-                        _uiMessageState.value = UiMessage.Error(
-                            message = result.message ?: "Something went wrong.",
-                            statusCode = result.status
-                        )
-                        _readDiaryUiState.value = UiState.Idle
-                    }
+                        is Resource.Error -> {
+                            _uiMessageState.value = UiMessage.Error(
+                                message = result.message ?: "Something went wrong.",
+                                statusCode = result.status
+                            )
+                            _readDiaryUiState.value = UiState.Idle
+                        }
 
-                    is Resource.Loading -> {}
+                        is Resource.Loading -> {}
+                    }
                 }
+            } else {
+                _uiMessageState.value =
+                    UiMessage.Error("No internet connection.")
             }
         }
     }

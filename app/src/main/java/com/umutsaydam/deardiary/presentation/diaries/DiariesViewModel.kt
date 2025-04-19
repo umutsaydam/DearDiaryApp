@@ -8,6 +8,7 @@ import com.umutsaydam.deardiary.domain.sealedStates.UiMessage
 import com.umutsaydam.deardiary.domain.sealedStates.UiState
 import com.umutsaydam.deardiary.domain.entity.DiaryEntity
 import com.umutsaydam.deardiary.domain.entity.FontFamilySealed
+import com.umutsaydam.deardiary.domain.useCases.IsInternetAvailableUseCase
 import com.umutsaydam.deardiary.domain.useCases.local.diaryRoomUseCase.DeleteDiaryRoomUseCase
 import com.umutsaydam.deardiary.domain.useCases.remote.diaryServerUseCase.GetDiariesServerUseCase
 import com.umutsaydam.deardiary.domain.useCases.local.diaryRoomUseCase.GetDiariesRoomUseCase
@@ -30,7 +31,8 @@ class DiariesViewModel @Inject constructor(
     private val insertAllDiariesRoomUseCase: InsertAllDiariesRoomUseCase,
     private val deleteDiaryServerUseCase: DeleteDiaryServerUseCase,
     private val deleteDiariesRoomUseCase: DeleteDiaryRoomUseCase,
-    private val searchDiaryRoomUseCase: SearchDiaryRoomUseCase
+    private val searchDiaryRoomUseCase: SearchDiaryRoomUseCase,
+    private val isInternetAvailableUseCase: IsInternetAvailableUseCase
 ) : ViewModel() {
 
     private val _defaultFont = MutableStateFlow<GenericFontFamily?>(null)
@@ -61,23 +63,28 @@ class DiariesViewModel @Inject constructor(
     }
 
     private fun getDiariesFromServer() {
-        viewModelScope.launch {
-            when (val result = getDiariesServerUseCase()) {
-                is Resource.Success -> {
-                    result.data?.let { diariesFromServer ->
-                        addNonDiaries(diariesFromServer)
+        if (isInternetAvailableUseCase()) {
+            viewModelScope.launch {
+                when (val result = getDiariesServerUseCase()) {
+                    is Resource.Success -> {
+                        result.data?.let { diariesFromServer ->
+                            addNonDiaries(diariesFromServer)
+                        }
                     }
-                }
 
-                is Resource.Error -> {
-                    _uiMessageState.value = UiMessage.Error(
-                        message = result.message ?: "Something went wrong.",
-                        statusCode = result.status
-                    )
-                }
+                    is Resource.Error -> {
+                        _uiMessageState.value = UiMessage.Error(
+                            message = result.message ?: "Something went wrong.",
+                            statusCode = result.status
+                        )
+                    }
 
-                is Resource.Loading -> {}
+                    is Resource.Loading -> {}
+                }
             }
+        } else {
+            _uiMessageState.value =
+                UiMessage.Error("No internet connection.")
         }
     }
 
@@ -95,13 +102,18 @@ class DiariesViewModel @Inject constructor(
     }
 
     fun deleteDiaryById(selectedDiaryEntity: DiaryEntity) {
-        viewModelScope.launch {
-            deleteDiariesRoomUseCase(selectedDiaryEntity)
-            if (deleteDiaryServerUseCase(selectedDiaryEntity.diaryId) is Resource.Success) {
-                _uiMessageState.value = UiMessage.Success("Deleted successfully.")
-            } else {
-                _uiMessageState.value = UiMessage.Error("Something went wrong.")
+        if (isInternetAvailableUseCase()) {
+            viewModelScope.launch {
+                deleteDiariesRoomUseCase(selectedDiaryEntity)
+                if (deleteDiaryServerUseCase(selectedDiaryEntity.diaryId) is Resource.Success) {
+                    _uiMessageState.value = UiMessage.Success("Deleted successfully.")
+                } else {
+                    _uiMessageState.value = UiMessage.Error("Something went wrong.")
+                }
             }
+        } else {
+            _uiMessageState.value =
+                UiMessage.Error("No internet connection.")
         }
     }
 

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.umutsaydam.deardiary.domain.sealedStates.Resource
 import com.umutsaydam.deardiary.domain.entity.FontFamilySealed
 import com.umutsaydam.deardiary.domain.entity.FontSizeSealed
+import com.umutsaydam.deardiary.domain.useCases.IsInternetAvailableUseCase
 import com.umutsaydam.deardiary.domain.useCases.local.fontFamilyAndSizeUseCase.GetFontFamilyUseCase
 import com.umutsaydam.deardiary.domain.useCases.local.fontFamilyAndSizeUseCase.GetFontSizeUseCase
 import com.umutsaydam.deardiary.domain.useCases.local.fontFamilyAndSizeUseCase.SetFontFamilyUseCase
@@ -26,7 +27,8 @@ class SettingsViewModel @Inject constructor(
     private val getFontSizeUseCase: GetFontSizeUseCase,
     private val setFontSizeUseCase: SetFontSizeUseCase,
     private val userLogoutUseCase: UserLogoutUseCase,
-    private val saveTokenUseCase: SaveTokenUseCase
+    private val saveTokenUseCase: SaveTokenUseCase,
+    private val isInternetAvailableUseCase: IsInternetAvailableUseCase
 ) : ViewModel() {
     private val _isLogout = MutableStateFlow(false)
     val isLogout: StateFlow<Boolean> = _isLogout
@@ -70,18 +72,20 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun logout() {
-        viewModelScope.launch {
-            when (userLogoutUseCase()) {
-                is Resource.Success -> {
-                    saveTokenUseCase("")
-                    _isLogout.value = true
-                }
+        if(isInternetAvailableUseCase()){
+            viewModelScope.launch {
+                when (userLogoutUseCase()) {
+                    is Resource.Success -> {
+                        saveTokenUseCase("")
+                        _isLogout.value = true
+                    }
 
-                is Resource.Error -> {
-                    _isLogout.value = true
-                }
+                    is Resource.Error -> {
+                        _isLogout.value = true
+                    }
 
-                is Resource.Loading -> {}
+                    is Resource.Loading -> {}
+                }
             }
         }
     }
