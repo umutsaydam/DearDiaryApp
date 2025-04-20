@@ -65,8 +65,6 @@ class MainActivityViewModel @Inject constructor(
                     is Resource.Error -> {
                         _nextRoute.value = Route.Auth.route
                     }
-
-                    is Resource.Loading -> {}
                 }
             }
         }
