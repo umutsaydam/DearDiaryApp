@@ -7,6 +7,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.presentation.navigation.Route
@@ -28,10 +29,10 @@ fun MainNavigationAppBar(navController: NavController) {
             icon = {
                 Icon(
                     painter = painterResource(R.drawable.ic_insights_filled),
-                    contentDescription = "Go to my insights"
+                    contentDescription = stringResource(R.string.go_insights)
                 )
             },
-            label = { Text("Insights") },
+            label = { Text(stringResource(R.string.insights)) },
             alwaysShowLabel = true
         )
 
@@ -43,10 +44,10 @@ fun MainNavigationAppBar(navController: NavController) {
             icon = {
                 Icon(
                     painter = painterResource(R.drawable.ic_folder_outline),
-                    contentDescription = "Go to my diaries"
+                    contentDescription = stringResource(R.string.go_diaries)
                 )
             },
-            label = { Text("Diaries") },
+            label = { Text(stringResource(R.string.diaries)) },
             alwaysShowLabel = true
         )
 
@@ -58,10 +59,10 @@ fun MainNavigationAppBar(navController: NavController) {
             icon = {
                 Icon(
                     painter = painterResource(R.drawable.ic_settings_outline),
-                    contentDescription = "Go to settings"
+                    contentDescription = stringResource(R.string.go_settings)
                 )
             },
-            label = { Text("Settings") },
+            label = { Text(stringResource(R.string.settings)) },
             alwaysShowLabel = true
         )
     }

@@ -37,6 +37,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
@@ -257,12 +258,12 @@ fun BottomXRMenu(
             icon = {
                 Icon(
                     painter = painterResource(R.drawable.ic_sticky_note_outline),
-                    contentDescription = "Choose a diary template",
+                    contentDescription = stringResource(R.string.choose_template),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(SizeIconMedium)
                 )
             },
-            label = { Text("Templates") }
+            label = { Text(stringResource(R.string.templates)) }
         )
 
         NavigationBarItem(
@@ -284,11 +285,11 @@ fun BottomXRMenu(
                             }
                         },
                     painter = painterResource(R.drawable.ic_emoji_outline),
-                    contentDescription = "Choose a mood",
+                    contentDescription = stringResource(R.string.choose_mood),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             },
-            label = { Text("Choose a mood") }
+            label = { Text(stringResource(R.string.choose_mood)) }
         )
     }
 }

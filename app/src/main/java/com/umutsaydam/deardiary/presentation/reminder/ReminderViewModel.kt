@@ -3,6 +3,7 @@ package com.umutsaydam.deardiary.presentation.reminder
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.domain.notification.ReminderScheduler
 import com.umutsaydam.deardiary.domain.useCases.local.reminderNotificationUseCase.IsReminderEnabledUseCase
 import com.umutsaydam.deardiary.domain.useCases.local.reminderNotificationUseCase.SetReminderUseCase
@@ -21,7 +22,7 @@ class ReminderViewModel @Inject constructor(
     val isReminderEnabled: Flow<Boolean> = isReminderEnabledUseCase()
 
     fun scheduleReminder(context: Context, hour: Int, minute: Int) {
-        scheduler.scheduleReminder(context, hour, minute, "Time to write your diary ✍️")
+        scheduler.scheduleReminder(context, hour, minute, context.getString(R.string.time_to_write_reminder))
     }
 
     fun setReminder(enabled: Boolean) {

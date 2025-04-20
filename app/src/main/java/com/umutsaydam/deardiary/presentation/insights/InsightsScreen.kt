@@ -24,6 +24,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -32,6 +33,7 @@ import com.github.mikephil.charting.charts.RadarChart
 import com.github.mikephil.charting.data.RadarData
 import com.github.mikephil.charting.data.RadarDataSet
 import com.github.mikephil.charting.formatter.ValueFormatter
+import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.domain.sealedStates.InsightEmotionTimeState
 import com.umutsaydam.deardiary.domain.sealedStates.UiMessage
 import com.umutsaydam.deardiary.domain.sealedStates.UiState
@@ -82,7 +84,7 @@ fun InsightsScreen(
     }
 
     BaseScaffold(
-        title = { Text("Insights") },
+        title = { Text(stringResource(R.string.insights)) },
         bottomBar = { MainNavigationAppBar(navController) }
     ) { paddingValues ->
         Column(
@@ -110,11 +112,11 @@ fun InsightsScreen(
                         (totalInsightsUiState as UiState.Success<TotalInsightsEntity>).data!!
                     TotalStatisticsSection(
                         totalCountOfDiaries = totalInsights.totalDiaries.toString(),
-                        contentTotalCountOfDiaries = "Total Diaries",
+                        contentTotalCountOfDiaries = stringResource(R.string.total_diaries),
                         countOfCurrentStreak = totalInsights.currentStreak.toString(),
-                        contentOfCurrentStreak = "Current Streak",
+                        contentOfCurrentStreak = stringResource(R.string.current_streak),
                         countOfLongestStreak = totalInsights.longestStreak.toString(),
-                        contentOfLongestStreak = "Longest Streak"
+                        contentOfLongestStreak = stringResource(R.string.longest_streak)
                     )
                 }
             }

@@ -11,8 +11,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.GenericFontFamily
+import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.presentation.Dimens.PaddingSmall
 import com.umutsaydam.deardiary.presentation.Dimens.CornerSmall
 
@@ -39,7 +41,7 @@ fun FontSizeListItem(
             .padding(top = PaddingSmall, bottom = PaddingSmall, start = PaddingSmall)
     ) {
         Text(
-            text = "Dear diary, I am so happy.",
+            text = stringResource(R.string.dear_diary_i_so_happy),
             style = textStyle.copy(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontFamily = fontFamily

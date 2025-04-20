@@ -1,5 +1,6 @@
 package com.umutsaydam.deardiary.data.remote.repository
 
+import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.data.remote.DearDiaryApiService
 import com.umutsaydam.deardiary.data.remote.mapper.DiaryEmotionMapper.toEntity
 import com.umutsaydam.deardiary.data.remote.mapper.TotalInsightsMapper.toEntity
@@ -23,7 +24,7 @@ class InsightsRepositoryImpl @Inject constructor(
                 return Resource.Success(it.toEntity())
             }
         } else if (result.code() == 401) {
-            return Resource.Error(401, "You need to resign in.")
+            return Resource.Error(401, R.string.need_resign)
         }
         return Resource.Error()
     }
@@ -39,7 +40,7 @@ class InsightsRepositoryImpl @Inject constructor(
                 return Resource.Success(entityList)
             }
         } else if (result.code() == 401) {
-            return Resource.Error(401, "You need to resign in.")
+            return Resource.Error(401, R.string.need_resign)
         }
         return Resource.Error()
     }

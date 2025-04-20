@@ -1,5 +1,6 @@
 package com.umutsaydam.deardiary.data.remote.repository
 
+import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.data.remote.DearDiaryApiService
 import com.umutsaydam.deardiary.data.remote.mapper.TokenMapper.toEntity
 import com.umutsaydam.deardiary.data.remote.mapper.UserMapper.toDto
@@ -20,7 +21,7 @@ class UserRepositoryImpl @Inject constructor(
         if (response.code() == 201) {
             return Resource.Success()
         } else if (response.code() == 400) {
-            return Resource.Error(401, "This username already taken.")
+            return Resource.Error(401, R.string.username_taken)
         }
         return Resource.Error()
     }
@@ -36,7 +37,7 @@ class UserRepositoryImpl @Inject constructor(
                 return Resource.Success(tokenEntity)
             }
         } else if (response.code() == 500) {
-            return Resource.Error(500, "Username or password wrong.")
+            return Resource.Error(500, R.string.username_password_wrong)
         }
         return Resource.Error()
     }
@@ -60,7 +61,7 @@ class UserRepositoryImpl @Inject constructor(
         if (response.code() == 200) {
             return Resource.Success(true)
         } else if (response.code() == 401) {
-            return Resource.Error(401, "You need to resign in.")
+            return Resource.Error(401, R.string.need_resign)
         }
         return Resource.Error()
     }

@@ -25,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -64,12 +65,12 @@ fun AddDiaryScreen(
     LaunchedEffect(uiMessageState) {
         when (val state = uiMessageState) {
             is UiMessage.Success -> {
-                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(state.message), Toast.LENGTH_SHORT).show()
                 addDiaryViewModel.clearUiMessageState()
             }
 
             is UiMessage.Error -> {
-                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(state.message), Toast.LENGTH_SHORT).show()
                 if (state.statusCode != null && state.statusCode == 401) {
                     navController.safeNavigateWithClearingBackStack(Route.Auth.route)
                 }
@@ -81,7 +82,7 @@ fun AddDiaryScreen(
     }
 
     BaseScaffold(
-        title = { Text("Write a diary") },
+        title = { Text(stringResource(R.string.write_diary)) },
         topActions = {
             IconButton(
                 onClick = {
@@ -90,7 +91,7 @@ fun AddDiaryScreen(
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_check_filled),
-                    contentDescription = "Save the dairy"
+                    contentDescription = stringResource(R.string.save_diary)
                 )
             }
         },
@@ -102,7 +103,7 @@ fun AddDiaryScreen(
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_back_filled),
-                    contentDescription = "Back to the previous screen"
+                    contentDescription = stringResource(R.string.back_prev_screen)
                 )
             }
         }
@@ -134,7 +135,7 @@ fun AddDiaryScreen(
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_date_filled),
-                        contentDescription = "Select a date"
+                        contentDescription = stringResource(R.string.select_a_date)
                     )
 
                     Text(
@@ -190,14 +191,14 @@ fun DairyDatePickerDialog(
                     onDismissed()
                 }
             ) {
-                Text("Select")
+                Text(stringResource(R.string.select))
             }
         },
         dismissButton = {
             TextButton(
                 onClick = { onDismissed() }
             ) {
-                Text("Dismiss")
+                Text(stringResource(R.string.dismiss))
             }
         }
     ) {

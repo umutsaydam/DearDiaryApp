@@ -1,6 +1,6 @@
 package com.umutsaydam.deardiary.data.remote.repository
 
-import android.util.Log
+import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.data.remote.DearDiaryApiService
 import com.umutsaydam.deardiary.data.remote.mapper.DiaryMapper.toDto
 import com.umutsaydam.deardiary.data.remote.mapper.DiaryMapper.toEntity
@@ -18,19 +18,14 @@ class DiaryRepositoryImpl @Inject constructor(
     override suspend fun getAllDiaries(): Resource<List<DiaryEntity>> {
         val response = dearDiaryApiService.getDiaries()
         // 401 Token is wrong or expired.
-        // 403 Diary already added.
         // 200 List<DiaryEntity>.
-
-
         if (response.code() == 200) {
             response.body()?.let { diaryDtoList ->
                 val listDiaryEntity = diaryDtoList.map { dto -> dto.toEntity() }
                 return Resource.Success(listDiaryEntity)
             }
         } else if (response.code() == 401) {
-            return Resource.Error(401, "You need to resign in.")
-        }else if(response.code() == 403){
-            return Resource.Error(401, response.message())
+            return Resource.Error(401, R.string.need_resign)
         }
         return Resource.Error()
     }
@@ -46,9 +41,9 @@ class DiaryRepositoryImpl @Inject constructor(
                 return Resource.Success(it.toEntity())
             }
         } else if (response.code() == 401) {
-            return Resource.Error(401, "You need to resign in.")
+            return Resource.Error(401, R.string.need_resign)
         } else if (response.code() == 403) {
-            return Resource.Error(403, "You have already added at the same date.")
+            return Resource.Error(403, R.string.added_at_same_date)
         }
         return Resource.Error()
     }
@@ -68,15 +63,14 @@ class DiaryRepositoryImpl @Inject constructor(
         // 401 Token is wrong or expired.
         // 404 Diary not found.
         // 200 DiaryEntity.
-        Log.i("R/T", "Stats: ${response.code()}")
         if (response.code() == 200) {
             response.body()?.let {
                 return Resource.Success(it.toEntity())
             }
         } else if (response.code() == 401) {
-            return Resource.Error(response.code(), "You need to resign in.")
+            return Resource.Error(response.code(), R.string.need_resign)
         } else if (response.code() == 404) {
-            return Resource.Error(response.code(), response.message())
+            return Resource.Error(response.code(), R.string.diary_not_found)
         }
         return Resource.Error()
     }

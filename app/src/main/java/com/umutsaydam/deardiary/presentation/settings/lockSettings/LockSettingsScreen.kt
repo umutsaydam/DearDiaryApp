@@ -17,9 +17,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.umutsaydam.deardiary.R
+import com.umutsaydam.deardiary.domain.sealedStates.UiMessage
 import com.umutsaydam.deardiary.presentation.Dimens.SpacingSmall
 import com.umutsaydam.deardiary.presentation.common.BaseListItem
 import com.umutsaydam.deardiary.presentation.common.BaseScaffold
@@ -34,18 +36,38 @@ fun PinSettingsScreen(
 ) {
     val isFingerPrintEnable by lockSettingsViewModel.isFingerPrintEnabled.collectAsState()
     val isPinEnable by lockSettingsViewModel.isPinEnable.collectAsState()
-    val toastMessage = lockSettingsViewModel.uiMessageState.collectAsState().value
+    val uiMessageState = lockSettingsViewModel.uiMessageState.collectAsState().value
     val context = LocalContext.current
 
-    LaunchedEffect(toastMessage) {
-        if (toastMessage.isNotEmpty()) {
-            Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
-            lockSettingsViewModel.clearUiMessageState()
+    LaunchedEffect(uiMessageState) {
+        when (uiMessageState) {
+            is UiMessage.Success -> {
+                Toast.makeText(
+                    context,
+                    context.getString(uiMessageState.message),
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+                lockSettingsViewModel.clearUiMessageState()
+            }
+
+            is UiMessage.Error -> {
+                Toast.makeText(
+                    context,
+                    context.getString(uiMessageState.message),
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+                lockSettingsViewModel.clearUiMessageState()
+            }
+
+            else -> {}
         }
     }
 
+
     BaseScaffold(
-        title = { Text("Set a pin") },
+        title = { Text(stringResource(R.string.set_pin)) },
         navigation = {
             IconButton(
                 onClick = {
@@ -54,7 +76,7 @@ fun PinSettingsScreen(
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_back_filled),
-                    contentDescription = "Back to the previous screen"
+                    contentDescription = stringResource(R.string.back_prev_screen)
                 )
             }
         }
@@ -68,8 +90,8 @@ fun PinSettingsScreen(
                 )
         ) {
             BaseListItem(
-                title = "Add a pin",
-                description = "Keep your diaries in secure by adding a pin.",
+                title = stringResource(R.string.add_pin),
+                description = stringResource(R.string.keep_diaries_secure_with_pin),
                 onClick = {
                     if (lockSettingsViewModel.navigateSetPinScreenIfFingerprintNotEnable()) {
                         navController.safeNavigate(Route.SetPin.route)
@@ -78,7 +100,7 @@ fun PinSettingsScreen(
                     }
                 },
                 iconRes = R.drawable.ic_pin_outline,
-                contentDesc = "Set font family and size.",
+                contentDesc = stringResource(R.string.select_font_family_size),
                 trailingContent = {
                     Switch(
                         checked = isPinEnable,
@@ -100,8 +122,8 @@ fun PinSettingsScreen(
             )
 
             BaseListItem(
-                title = "Add fingerprint",
-                description = "Keep your diaries in secure by adding a fingerprint.",
+                title = stringResource(R.string.add_fingerprint),
+                description = stringResource(R.string.keep_diaries_secure_with_fingerprint),
                 onClick = {
                     if (lockSettingsViewModel.navigateSetFingerprintIfPinEnable()) {
                         navController.safeNavigate(Route.SetFingerPrint.route)
@@ -110,7 +132,7 @@ fun PinSettingsScreen(
                     }
                 },
                 iconRes = R.drawable.ic_finger_print,
-                contentDesc = "Add fingerprint icon",
+                contentDesc = stringResource(R.string.add_fingerprint),
                 trailingContent = {
                     Switch(
                         checked = isFingerPrintEnable,

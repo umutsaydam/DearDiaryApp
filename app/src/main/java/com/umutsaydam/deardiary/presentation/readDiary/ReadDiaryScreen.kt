@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -56,12 +57,14 @@ fun ReadDiaryScreen(
         LaunchedEffect(uiMessageState) {
             when (val state = uiMessageState) {
                 is UiMessage.Success -> {
-                    Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(state.message), Toast.LENGTH_SHORT)
+                        .show()
                     readDiaryViewModel.clearUiMessageState()
                 }
 
                 is UiMessage.Error -> {
-                    Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(state.message), Toast.LENGTH_SHORT)
+                        .show()
                     if (state.statusCode != null && state.statusCode == 401) {
                         navController.safeNavigateWithClearingBackStack(Route.Auth.route)
                     }
@@ -80,7 +83,7 @@ fun ReadDiaryScreen(
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_update_filled),
-                        contentDescription = "Update the diary"
+                        contentDescription = stringResource(R.string.update_the_diary)
                     )
                 }
             },
@@ -92,7 +95,7 @@ fun ReadDiaryScreen(
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_arrow_back_filled),
-                        contentDescription = "Back to the previous screen"
+                        contentDescription = stringResource(R.string.back_prev_screen)
                     )
                 }
             }

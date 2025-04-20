@@ -13,6 +13,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.umutsaydam.deardiary.R
@@ -44,7 +45,7 @@ fun EntryPinScreen(
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_arrow_back_filled),
-                        contentDescription = "Back to the previous screen"
+                        contentDescription = stringResource(R.string.back_prev_screen)
                     )
                 }
             }

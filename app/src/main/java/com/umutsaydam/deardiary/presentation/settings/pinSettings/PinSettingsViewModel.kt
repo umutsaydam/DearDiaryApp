@@ -2,7 +2,9 @@ package com.umutsaydam.deardiary.presentation.settings.pinSettings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.domain.enums.PinStateEnum
+import com.umutsaydam.deardiary.domain.sealedStates.UiMessage
 import com.umutsaydam.deardiary.domain.useCases.local.securityUseCase.pin.GetPinUseCase
 import com.umutsaydam.deardiary.domain.useCases.local.securityUseCase.pin.SetPinUseCase
 import com.umutsaydam.deardiary.util.Constants.PIN_LENGTH
@@ -29,8 +31,8 @@ class PinSettingsViewModel @Inject constructor(
     private val _pinTextConfirm = MutableStateFlow("")
     val pinTextConfirm: StateFlow<String> = _pinTextConfirm
 
-    private val _uiMessageState = MutableStateFlow("")
-    val uiMessageState: StateFlow<String> = _uiMessageState
+    private val _uiMessageState = MutableStateFlow<UiMessage?>(null)
+    val uiMessageState: StateFlow<UiMessage?> = _uiMessageState
 
     init {
         getPin()
@@ -62,23 +64,23 @@ class PinSettingsViewModel @Inject constructor(
     private fun removePinIfMatches() {
         if (_pin.value == _pinText.value) {
             setPin("")
-            _uiMessageState.value = "Your pin has been removed."
+            _uiMessageState.value = UiMessage.Success(R.string.pin_removed)
             updatePinState(PinStateEnum.DONE)
         } else {
             _pinText.value = ""
-            _uiMessageState.value = "Pins does not match."
+            _uiMessageState.value = UiMessage.Error(R.string.pins_not_matched)
         }
     }
 
     private fun savePinIfMatches() {
         if (pinText.value == pinTextConfirm.value) {
             setPin(pinText.value)
-            _uiMessageState.value = "Your pin has been saved."
+            _uiMessageState.value = UiMessage.Success(R.string.pin_saved)
             updatePinState(PinStateEnum.DONE)
         } else {
             _pinText.value = ""
             _pinTextConfirm.value = ""
-            _uiMessageState.value = "Pins does not match."
+            _uiMessageState.value = UiMessage.Error(R.string.pins_not_matched)
             updatePinState(PinStateEnum.ENTER_FIRST)
         }
     }
@@ -102,6 +104,6 @@ class PinSettingsViewModel @Inject constructor(
     }
 
     fun clearUiMessageState() {
-        _uiMessageState.value = ""
+        _uiMessageState.value = null
     }
 }

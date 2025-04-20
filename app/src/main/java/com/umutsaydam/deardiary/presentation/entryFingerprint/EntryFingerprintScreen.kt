@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.presentation.Dimens.SizeImageLarge
@@ -61,7 +62,7 @@ fun EntryFingerprintScreen(
                     navController.safeNavigate(Route.EntryPin.createRoute(true))
                 },
             ) {
-                Text("Use pin")
+                Text(stringResource(R.string.use_pin))
             }
         },
         containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
@@ -75,12 +76,12 @@ fun EntryFingerprintScreen(
         ) {
             Icon(
                 painter = painterResource(R.drawable.ic_finger_print),
-                contentDescription = "Fingerprint",
+                contentDescription = stringResource(R.string.fingerprint),
                 modifier = Modifier.size(SizeImageLarge),
                 tint = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.height(SpacingMedium))
-            Text("Scan your fingerprint.", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.scan_fingerprint), style = MaterialTheme.typography.titleMedium)
         }
     }
 }

@@ -1,8 +1,10 @@
 package com.umutsaydam.deardiary.presentation.readDiary
 
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.GenericFontFamily
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.domain.sealedStates.Resource
 import com.umutsaydam.deardiary.domain.sealedStates.UiMessage
 import com.umutsaydam.deardiary.domain.sealedStates.UiState
@@ -63,12 +65,12 @@ class ReadDiaryViewModel @Inject constructor(
         val currDiary = (_readDiaryUiState.value as? UiState.Success)?.data?.copy()
         currDiary?.let { it ->
             if (_diaryContent.value == it.diaryContent && _diaryEmotion.value == it.diaryEmotion) {
-                _uiMessageState.value = UiMessage.Error("Your diary already up to date.")
+                _uiMessageState.value = UiMessage.Error(R.string.diary_already_update)
                 return
             }
 
             if (_diaryContent.value.isNullOrEmpty()) {
-                _uiMessageState.value = UiMessage.Error("Content can not be empty.")
+                _uiMessageState.value = UiMessage.Error(R.string.content_can_not_empty)
                 return
             }
 
@@ -83,13 +85,13 @@ class ReadDiaryViewModel @Inject constructor(
                                 setDiary(newDiary)
                                 upsertDiaryRoomUseCase(newDiary)
                                 _uiMessageState.value =
-                                    UiMessage.Success("Diary updated successfully.")
+                                    UiMessage.Success(R.string.diary_updated_successfully)
                             }
                         }
 
                         is Resource.Error -> {
                             _uiMessageState.value = UiMessage.Error(
-                                message = result.message ?: "Something went wrong.",
+                                message = result.message ?: R.string.something_went_wrong,
                                 statusCode = result.status
                             )
                             _readDiaryUiState.value = UiState.Idle
@@ -100,7 +102,7 @@ class ReadDiaryViewModel @Inject constructor(
                 }
             } else {
                 _uiMessageState.value =
-                    UiMessage.Error("No internet connection.")
+                    UiMessage.Error(R.string.no_internet)
             }
         }
     }

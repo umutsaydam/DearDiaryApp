@@ -3,6 +3,7 @@ package com.umutsaydam.deardiary.presentation.diaries
 import androidx.compose.ui.text.font.GenericFontFamily
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.domain.sealedStates.Resource
 import com.umutsaydam.deardiary.domain.sealedStates.UiMessage
 import com.umutsaydam.deardiary.domain.sealedStates.UiState
@@ -74,7 +75,7 @@ class DiariesViewModel @Inject constructor(
 
                     is Resource.Error -> {
                         _uiMessageState.value = UiMessage.Error(
-                            message = result.message ?: "Something went wrong.",
+                            message = result.message ?: R.string.something_went_wrong,
                             statusCode = result.status
                         )
                     }
@@ -84,7 +85,7 @@ class DiariesViewModel @Inject constructor(
             }
         } else {
             _uiMessageState.value =
-                UiMessage.Error("No internet connection.")
+                UiMessage.Error(R.string.no_internet)
         }
     }
 
@@ -106,14 +107,14 @@ class DiariesViewModel @Inject constructor(
             viewModelScope.launch {
                 deleteDiariesRoomUseCase(selectedDiaryEntity)
                 if (deleteDiaryServerUseCase(selectedDiaryEntity.diaryId) is Resource.Success) {
-                    _uiMessageState.value = UiMessage.Success("Deleted successfully.")
+                    _uiMessageState.value = UiMessage.Success(R.string.deleted_successfully)
                 } else {
-                    _uiMessageState.value = UiMessage.Error("Something went wrong.")
+                    _uiMessageState.value = UiMessage.Error(R.string.something_went_wrong)
                 }
             }
         } else {
             _uiMessageState.value =
-                UiMessage.Error("No internet connection.")
+                UiMessage.Error(R.string.no_internet)
         }
     }
 

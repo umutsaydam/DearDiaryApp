@@ -2,6 +2,8 @@ package com.umutsaydam.deardiary.presentation.settings.lockSettings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.umutsaydam.deardiary.R
+import com.umutsaydam.deardiary.domain.sealedStates.UiMessage
 import com.umutsaydam.deardiary.domain.useCases.local.securityUseCase.fingerPrint.IsFingerPrintEnabledUseCase
 import com.umutsaydam.deardiary.domain.useCases.local.securityUseCase.pin.GetPinUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,8 +24,8 @@ class LockSettingsViewModel @Inject constructor(
     private val _isFingerPrintEnabled = MutableStateFlow(false)
     val isFingerPrintEnabled = _isFingerPrintEnabled
 
-    private val _uiMessageState = MutableStateFlow("")
-    val uiMessageState: StateFlow<String> = _uiMessageState
+    private val _uiMessageState = MutableStateFlow<UiMessage?>(null)
+    val uiMessageState: StateFlow<UiMessage?> = _uiMessageState
 
     init {
         getPin()
@@ -47,13 +49,13 @@ class LockSettingsViewModel @Inject constructor(
     }
 
     fun clearUiMessageState() {
-        _uiMessageState.value = ""
+        _uiMessageState.value = null
     }
 
     fun navigateSetPinScreenIfFingerprintNotEnable(): Boolean {
         if(_isPinEnable.value){
             if (_isFingerPrintEnabled.value){
-                _uiMessageState.value = "First you must remove fingerprint lock."
+                _uiMessageState.value = UiMessage.Error(R.string.first_remove_fingerprint)
                 return false
             }
         }
@@ -62,7 +64,7 @@ class LockSettingsViewModel @Inject constructor(
 
     fun navigateSetFingerprintIfPinEnable(): Boolean {
         if (!_isPinEnable.value){
-            _uiMessageState.value = "First you must add a pin."
+            _uiMessageState.value = UiMessage.Error(R.string.first_add_pin)
             return false
         }
         return true

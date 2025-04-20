@@ -37,11 +37,6 @@ class FingerPrintViewModel @Inject constructor(
         viewModelScope.launch {
             val isEnabled = !_isFingerPrintEnabled.value
             setFingerPrintEnabledUseCase(isEnabled)
-            if (isEnabled) {
-                _uiMessageState.value = "Your fingerprint has been added."
-            } else {
-                _uiMessageState.value = "Your fingerprint has been removed."
-            }
         }
     }
 

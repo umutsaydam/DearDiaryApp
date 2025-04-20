@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Build
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import androidx.work.Worker
 import androidx.work.workDataOf
 import com.umutsaydam.deardiary.domain.notification.ReminderScheduler
 import com.umutsaydam.deardiary.util.ReminderWorker

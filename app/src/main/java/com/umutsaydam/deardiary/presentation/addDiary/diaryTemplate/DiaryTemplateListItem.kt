@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.domain.entity.DiaryTemplateEntity
 import com.umutsaydam.deardiary.presentation.Dimens.PaddingSmall
@@ -64,7 +65,7 @@ fun DiaryTemplateListItem(
                     }
                 ) {
                     Text(
-                        "Add",
+                        stringResource(R.string.add),
                         style = MaterialTheme.typography.labelSmall
                     )
                 }
@@ -80,7 +81,7 @@ fun DiaryTemplateListItem(
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_info_outline),
-                        contentDescription = "Info about template"
+                        contentDescription = stringResource(R.string.information_about_the_diary_template)
                     )
                 }
             }
@@ -89,7 +90,7 @@ fun DiaryTemplateListItem(
         Image(
             modifier = Modifier.weight(0.6f),
             painter = painterResource(diaryTemplateEntity.templateVector),
-            contentDescription = "My day template vector",
+            contentDescription = stringResource(R.string.my_day_template_vector),
             contentScale = ContentScale.Fit,
         )
     }

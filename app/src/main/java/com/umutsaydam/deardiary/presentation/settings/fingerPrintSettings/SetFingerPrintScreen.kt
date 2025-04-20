@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.umutsaydam.deardiary.R
@@ -63,7 +64,7 @@ fun SetFingerPrintScreen(
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_arrow_back_filled),
-                    contentDescription = "Back to the previous screen"
+                    contentDescription = stringResource(R.string.back_prev_screen)
                 )
             }
         },
@@ -78,12 +79,12 @@ fun SetFingerPrintScreen(
         ) {
             Icon(
                 painter = painterResource(R.drawable.ic_finger_print),
-                contentDescription = "Fingerprint",
+                contentDescription = stringResource(R.string.fingerprint),
                 modifier = Modifier.size(SizeImageLarge),
                 tint = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.height(SizeIconSmall))
-            Text("Scan your fingerprint.", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.scan_fingerprint), style = MaterialTheme.typography.titleMedium)
         }
     }
 }

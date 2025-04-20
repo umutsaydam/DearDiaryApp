@@ -2,6 +2,7 @@ package com.umutsaydam.deardiary.presentation.addDiary
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.domain.sealedStates.Resource
 import com.umutsaydam.deardiary.domain.sealedStates.UiMessage
 import com.umutsaydam.deardiary.domain.sealedStates.UiState
@@ -41,7 +42,7 @@ class AddDiaryViewModel @Inject constructor(
 
     fun saveDiaryServer() {
         if (_diaryContent.value.isBlank()) {
-            _uiMessageState.value = UiMessage.Error("Content can not be empty.")
+            _uiMessageState.value = UiMessage.Error(R.string.content_can_not_empty)
             return
         }
 
@@ -63,13 +64,13 @@ class AddDiaryViewModel @Inject constructor(
                             saveDiaryRoomUseCase(it)
                             _addDiaryUiState.value = UiState.Success(it)
                             _uiMessageState.value =
-                                UiMessage.Success("Your diary was added successfully.")
+                                UiMessage.Success(R.string.diary_added)
                         }
                     }
 
                     is Resource.Error -> {
                         _uiMessageState.value = UiMessage.Error(
-                            message = result.message ?: "Something went wrong.",
+                            message = result.message ?: R.string.something_went_wrong,
                             statusCode = result.status
                         )
                         _addDiaryUiState.value = UiState.Idle
@@ -79,7 +80,7 @@ class AddDiaryViewModel @Inject constructor(
                 }
             }else{
                 _uiMessageState.value =
-                    UiMessage.Error("No internet connection.")
+                    UiMessage.Error(R.string.something_went_wrong)
             }
         }
     }

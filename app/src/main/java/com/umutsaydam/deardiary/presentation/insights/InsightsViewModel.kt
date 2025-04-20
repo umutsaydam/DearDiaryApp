@@ -3,6 +3,7 @@ package com.umutsaydam.deardiary.presentation.insights
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.mikephil.charting.data.RadarEntry
+import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.domain.sealedStates.InsightEmotionTimeState
 import com.umutsaydam.deardiary.domain.sealedStates.Resource
 import com.umutsaydam.deardiary.domain.sealedStates.UiMessage
@@ -60,7 +61,7 @@ class InsightsViewModel @Inject constructor(
 
                     is Resource.Error -> {
                         _uiMessageState.value =
-                            UiMessage.Error(result.message ?: "Something went wrong.")
+                            UiMessage.Error(result.message ?: R.string.something_went_wrong)
                         _totalInsightsUiState.value = UiState.Idle
                     }
 
@@ -69,7 +70,7 @@ class InsightsViewModel @Inject constructor(
             }
         }else{
             _uiMessageState.value =
-                UiMessage.Error("No internet connection.")
+                UiMessage.Error(R.string.no_internet)
         }
     }
 
@@ -88,7 +89,7 @@ class InsightsViewModel @Inject constructor(
 
                     is Resource.Error -> {
                         _uiMessageState.value =
-                            UiMessage.Error(result.message ?: "Something went wrong.")
+                            UiMessage.Error(result.message ?: R.string.something_went_wrong)
                         _totalEmotionInsightsUiState.value = UiState.Idle
                     }
 
@@ -97,7 +98,7 @@ class InsightsViewModel @Inject constructor(
             }
         }else{
             _uiMessageState.value =
-                UiMessage.Error("No internet connection.")
+                UiMessage.Error(R.string.no_internet)
         }
     }
 

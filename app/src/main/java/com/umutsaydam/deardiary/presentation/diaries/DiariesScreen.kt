@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.umutsaydam.deardiary.R
@@ -66,12 +67,12 @@ fun DiariesScreen(
     LaunchedEffect(uiMessageState) {
         when (val state = uiMessageState) {
             is UiMessage.Success -> {
-                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(state.message), Toast.LENGTH_SHORT).show()
                 diariesViewModel.clearUiMessageState()
             }
 
             is UiMessage.Error -> {
-                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(state.message), Toast.LENGTH_SHORT).show()
                 if (state.statusCode != null && state.statusCode == 401) {
                     navController.safeNavigateWithClearingBackStack(Route.Auth.route)
                 }
@@ -94,7 +95,7 @@ fun DiariesScreen(
                     }
                 )
             } else {
-                Text("Diaries")
+                Text(stringResource(R.string.diaries))
             }
         },
         topActions = {
@@ -103,7 +104,7 @@ fun DiariesScreen(
             ) {
                 Icon(
                     imageVector = if (uiSearchButtonState) Icons.Default.Clear else Icons.Default.Search,
-                    contentDescription = "Search in diaries"
+                    contentDescription = stringResource(R.string.search_in_diaries)
                 )
             }
         },
@@ -119,9 +120,9 @@ fun DiariesScreen(
         if (isDeleteDialogOpen) {
             BaseAlertDialog(
                 icon = R.drawable.ic_delete_outline,
-                contentDesc = "Delete icon",
-                title = "Delete Diary",
-                text = { Text("Diary is deleting. Are you sure?") },
+                contentDesc = stringResource(R.string.delete_icon),
+                title = stringResource(R.string.delete_diary),
+                text = { Text(stringResource(R.string.delete_diary_msg)) },
                 onDismissed = { isDeleteDialogOpen = false },
                 confirmButton = {
                     TextButton(
@@ -132,14 +133,14 @@ fun DiariesScreen(
                             }
                         }
                     ) {
-                        Text("Yes")
+                        Text(stringResource(R.string.yes))
                     }
                 },
                 dismissButton = {
                     TextButton(
                         onClick = { isDeleteDialogOpen = false }
                     ) {
-                        Text("Cancel")
+                        Text(stringResource(R.string.cancel))
                     }
                 }
             )
@@ -172,7 +173,7 @@ fun SearchTextField(value: String, onValueChange: (String) -> Unit) {
     TextField(
         value = value,
         onValueChange = { newValue -> onValueChange(newValue) },
-        placeholder = { Text("Search...") },
+        placeholder = { Text(stringResource(R.string.search_placeholder)) },
         singleLine = true,
         modifier = Modifier.fillMaxWidth(),
         colors = TextFieldDefaults.colors(
@@ -199,7 +200,7 @@ fun AddDiaryFab(onClick: () -> Unit) {
     ) {
         Icon(
             painter = painterResource(R.drawable.ic_edit_filled),
-            contentDescription = "Add a diary"
+            contentDescription = stringResource(R.string.add_diary)
         )
     }
 }

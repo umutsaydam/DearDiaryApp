@@ -33,6 +33,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -81,12 +82,12 @@ fun AuthScreen(
     LaunchedEffect(uiMessageState) {
         when (val state = uiMessageState) {
             is UiMessage.Success -> {
-                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(state.message), Toast.LENGTH_SHORT).show()
                 authViewModel.clearUiMessageState()
             }
 
             is UiMessage.Error -> {
-                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(state.message), Toast.LENGTH_SHORT).show()
                 authViewModel.clearUiMessageState()
             }
 
@@ -114,12 +115,12 @@ fun AuthScreen(
     ) {
         Image(
             painter = painterResource(R.drawable.app_logo_medium),
-            contentDescription = "App logo",
+            contentDescription = stringResource(R.string.app_logo),
             contentScale = ContentScale.Fit
         )
 
         Text(
-            text = "Dear Diary",
+            text = stringResource(R.string.app_title),
             style = MaterialTheme.typography.displayMedium
         )
 
@@ -136,9 +137,9 @@ fun AuthScreen(
                 onValueChange = { value ->
                     username = value
                 },
-                textInfo = "Username",
+                textInfo = stringResource(R.string.username),
                 leadIcon = R.drawable.ic_person_outline,
-                contentDesc = "Username icon",
+                contentDesc = stringResource(R.string.username_icon),
                 keyboardOptions = KeyboardOptions(
                     imeAction = ImeAction.Next,
                     keyboardType = KeyboardType.Text
@@ -151,10 +152,10 @@ fun AuthScreen(
                 onValueChange = { value ->
                     password = value
                 },
-                textInfo = "Password",
+                textInfo = stringResource(R.string.password),
                 visualTransformation = PasswordVisualTransformation(),
                 leadIcon = R.drawable.ic_password_outline,
-                contentDesc = "Password icon",
+                contentDesc = stringResource(R.string.password_icon),
                 keyboardOptions = KeyboardOptions(
                     imeAction = if (authState == AuthStateEnum.LOGIN) ImeAction.Done else ImeAction.Next,
                     keyboardType = KeyboardType.Password
@@ -168,10 +169,10 @@ fun AuthScreen(
                     onValueChange = { value ->
                         passwordConfirm = value
                     },
-                    textInfo = "Confirm",
+                    textInfo = stringResource(R.string.confirm),
                     visualTransformation = PasswordVisualTransformation(),
                     leadIcon = R.drawable.ic_password_outline,
-                    contentDesc = "Password confirm icon",
+                    contentDesc = stringResource(R.string.confirm_icon),
                     keyboardOptions = KeyboardOptions(
                         imeAction = ImeAction.Done,
                         keyboardType = KeyboardType.Password
@@ -196,7 +197,7 @@ fun AuthScreen(
                 },
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(if (authState == AuthStateEnum.LOGIN) "Sign in" else "Sign up")
+                Text(stringResource(if (authState == AuthStateEnum.LOGIN) R.string.sign_in else R.string.sign_up))
             }
         }
     }
@@ -207,9 +208,9 @@ fun AuthScreen(
         contentAlignment = Alignment.BottomCenter
     ) {
         ColorfulText(
-            normalText = if (authState == AuthStateEnum.LOGIN) "Don't you have an account? " else "Do you have an account? ",
+            normalText = stringResource(if (authState == AuthStateEnum.LOGIN) R.string.dont_have_account else R.string.do_have_account),
             normalTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            colorfulText = if (authState == AuthStateEnum.LOGIN) "Sign up now." else "Sign in now.",
+            colorfulText = stringResource(if (authState == AuthStateEnum.LOGIN) R.string.sign_up_now else R.string.sign_in_now),
             colorfulTextColor = MaterialTheme.colorScheme.primary,
             onClick = {
                 if (authState == AuthStateEnum.LOGIN) {

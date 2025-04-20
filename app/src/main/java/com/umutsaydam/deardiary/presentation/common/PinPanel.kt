@@ -20,6 +20,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.presentation.Dimens.PaddingSmall
@@ -48,7 +49,7 @@ fun PinPanel(
                     .padding(PaddingSmall)
                     .size(SizeIconLarge),
                 painter = painterResource(if (it < pin.size) R.drawable.ic_circle_filled else R.drawable.ic_circle_outline),
-                contentDescription = "Pin",
+                contentDescription = stringResource(R.string.pin),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }

@@ -27,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -77,7 +78,7 @@ fun SettingsScreen(
     }
 
     BaseScaffold(
-        title = { Text("Diaries") },
+        title = { Text(stringResource(R.string.settings)) },
         bottomBar = {
             MainNavigationAppBar(navController)
         }
@@ -129,11 +130,11 @@ fun SettingsScreen(
             }
 
             BaseListItem(
-                title = "Daily Reminder",
-                description = "Set daily reminders.",
+                title = stringResource(R.string.daily_reminder),
+                description = stringResource(R.string.set_daily_reminder),
                 onClick = { isReminderTimeOpen = true },
                 iconRes = R.drawable.ic_notification_outline,
-                contentDesc = "Daily Reminder icon",
+                contentDesc = stringResource(R.string.daily_reminder_icon),
                 trailingContent = {
                     Switch(
                         checked = isReminderEnable,
@@ -156,27 +157,27 @@ fun SettingsScreen(
             )
 
             BaseListItem(
-                title = "Font Family and Size",
-                description = "Set font family and size.",
+                title = stringResource(R.string.select_font_family_size),
+                description = stringResource(R.string.set_font_family_size),
                 onClick = { isFontSettingsOpen = true },
                 iconRes = R.drawable.ic_text_filled,
-                contentDesc = "Font family and size icon"
+                contentDesc = stringResource(R.string.font_family_size_icon)
             )
 
             BaseListItem(
-                title = "Set a Pin",
-                description = "Set a pin and keep your diaries in secure.",
+                title = stringResource(R.string.set_pin),
+                description = stringResource(R.string.set_a_pin_keep_diaries_safe),
                 onClick = { navController.safeNavigate(Route.PinSettings.route) },
                 iconRes = R.drawable.ic_lock_outline,
-                contentDesc = "Set a pin icon"
+                contentDesc = stringResource(R.string.set_a_pin_icon)
             )
 
             BaseListItem(
-                title = "Log out",
-                description = "Log out your account.",
+                title = stringResource(R.string.logout),
+                description = stringResource(R.string.logout_info),
                 onClick = { isLogOutDialogOpen = true },
                 iconRes = R.drawable.ic_log_out_outline,
-                contentDesc = "Log out icon"
+                contentDesc = stringResource(R.string.logout_icon)
             )
         }
     }
@@ -189,14 +190,14 @@ fun showLogoutDialog(
 ) {
     BaseAlertDialog(
         icon = R.drawable.ic_log_out_outline,
-        contentDesc = "Logout",
-        title = "Logout",
-        text = { Text("You are about to log out of your account, are you sure?") },
+        contentDesc = stringResource(R.string.logout_icon),
+        title = stringResource(R.string.logout),
+        text = { Text(stringResource(R.string.you_sure_to_logout)) },
         onDismissed = { onDismissed() },
         confirmButton = {
             TextButton(onClick = { onConfirm() }) {
                 Text(
-                    text = "Logout",
+                    text = stringResource(R.string.logout),
                     color = MaterialTheme.colorScheme.primary
                 )
             }
@@ -205,7 +206,12 @@ fun showLogoutDialog(
             TextButton(
                 modifier = Modifier.padding(end = PaddingSmall),
                 onClick = { onConfirm() }
-            ) { Text(text = "Cancel", color = MaterialTheme.colorScheme.primary) }
+            ) {
+                Text(
+                    text = stringResource(R.string.cancel),
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
         }
     )
 }
@@ -233,7 +239,7 @@ fun ReminderTimePicker(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(PaddingLarge),
-                text = "Select time"
+                text = stringResource(R.string.select_time)
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -252,7 +258,7 @@ fun ReminderTimePicker(
                     onClick = { onDismissed() }
                 ) {
                     Text(
-                        text = "Cancel",
+                        text = stringResource(R.string.cancel),
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
@@ -265,7 +271,7 @@ fun ReminderTimePicker(
                     }
                 ) {
                     Text(
-                        text = "Remind me",
+                        text = stringResource(R.string.remind_me),
                         color = MaterialTheme.colorScheme.primary
                     )
                 }

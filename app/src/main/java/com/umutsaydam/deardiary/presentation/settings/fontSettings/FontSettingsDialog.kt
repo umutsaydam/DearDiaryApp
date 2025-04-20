@@ -17,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.domain.entity.FontFamilySealed
@@ -45,8 +46,8 @@ fun FontSettingsDialog(
     BaseAlertDialog(
         modifier = modifier.fillMaxHeight(0.8F),
         icon = R.drawable.ic_text_filled,
-        contentDesc = "Select Font Family and Size",
-        title = "Select Font Family and Size",
+        contentDesc = stringResource(R.string.select_font_family_size),
+        title = stringResource(R.string.select_font_family_size),
         text = {
             Column {
                 Box {
@@ -55,7 +56,7 @@ fun FontSettingsDialog(
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.ic_arrow_dropdown_filled),
-                            contentDescription = "Select a font family"
+                            contentDescription = stringResource(R.string.select_font_family)
                         )
 
                         Text(
@@ -97,7 +98,7 @@ fun FontSettingsDialog(
                 onSave(defaultTextStyle, defaultFontFamily)
             }
             ) {
-                Text(text = "Save", color = MaterialTheme.colorScheme.primary)
+                Text(text = stringResource(R.string.save), color = MaterialTheme.colorScheme.primary)
             }
         },
         dismissButton = {
@@ -106,7 +107,7 @@ fun FontSettingsDialog(
                 onClick = { onDismissed() }
             ) {
                 Text(
-                    text = "Cancel",
+                    text = stringResource(R.string.cancel),
                     color = MaterialTheme.colorScheme.primary
                 )
             }

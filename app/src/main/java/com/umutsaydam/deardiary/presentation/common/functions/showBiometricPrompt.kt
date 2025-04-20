@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import com.umutsaydam.deardiary.R
 
 fun showBiometricPrompt(
     context: Context,
@@ -18,25 +19,25 @@ fun showBiometricPrompt(
         object : BiometricPrompt.AuthenticationCallback() {
             override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
                 super.onAuthenticationSucceeded(result)
-                onSuccess("Authentication Succeeded.")
+                onSuccess(context.getString(R.string.auth_succeeded))
             }
 
             override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                 super.onAuthenticationError(errorCode, errString)
-                onFailed("Authentication error.")
+                onFailed(context.getString(R.string.auth_error))
             }
 
             override fun onAuthenticationFailed() {
                 super.onAuthenticationFailed()
-                onFailed("Authentication failed.")
+                onFailed(context.getString(R.string.auth_failed))
             }
         }
     )
 
     val promptInfo = BiometricPrompt.PromptInfo.Builder()
-        .setTitle("Fingerprint Verification")
-        .setSubtitle("Use your fingerprint for security")
-        .setNegativeButtonText("Cancel")
+        .setTitle(context.getString(R.string.fingerprint_verification))
+        .setSubtitle(context.getString(R.string.use_your_fingerprint))
+        .setNegativeButtonText(context.getString(R.string.cancel))
         .build()
 
     biometricPrompt.authenticate(promptInfo)

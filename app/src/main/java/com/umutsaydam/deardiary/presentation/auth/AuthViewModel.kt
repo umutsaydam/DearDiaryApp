@@ -2,6 +2,7 @@ package com.umutsaydam.deardiary.presentation.auth
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.domain.enums.AuthStateEnum
 import com.umutsaydam.deardiary.domain.sealedStates.Resource
 import com.umutsaydam.deardiary.domain.sealedStates.UiMessage
@@ -37,12 +38,12 @@ class AuthViewModel @Inject constructor(
 
     fun createUser(username: String, password: String, passwordConfirm: String) {
         if (username.isBlank() && password.isBlank() && passwordConfirm.isBlank()) {
-            _uiMessageState.value = UiMessage.Error("Username, passwords can not be empty.")
+            _uiMessageState.value = UiMessage.Error(R.string.username_passwords_cannot_empty)
             return
         }
 
         if (password != passwordConfirm) {
-            _uiMessageState.value = UiMessage.Error("Passwords does not match.")
+            _uiMessageState.value = UiMessage.Error(R.string.passwords_does_not_match)
             return
         }
 
@@ -53,13 +54,13 @@ class AuthViewModel @Inject constructor(
                 when (result) {
                     is Resource.Success -> {
                         switchLoginState()
-                        _uiMessageState.value = UiMessage.Success("Signed up Successfully!")
+                        _uiMessageState.value = UiMessage.Success(R.string.signed_up_successfully)
                         _authUiState.value = UiState.Idle
                     }
 
                     is Resource.Error -> {
                         _uiMessageState.value =
-                            UiMessage.Error(result.message ?: "Something went wrong.")
+                            UiMessage.Error(result.message ?: R.string.something_went_wrong)
                         _authUiState.value = UiState.Idle
                     }
 
@@ -70,13 +71,13 @@ class AuthViewModel @Inject constructor(
             }
         } else {
             _uiMessageState.value =
-                UiMessage.Error("No internet connection.")
+                UiMessage.Error(R.string.no_internet)
         }
     }
 
     fun loginUser(username: String, password: String) {
         if (username.isBlank() || password.isBlank()) {
-            _uiMessageState.value = UiMessage.Error("Username, password can not be empty.")
+            _uiMessageState.value = UiMessage.Error(R.string.username_passwords_cannot_empty)
             return
         }
 
@@ -92,7 +93,7 @@ class AuthViewModel @Inject constructor(
 
                     is Resource.Error -> {
                         _uiMessageState.value =
-                            UiMessage.Error(result.message ?: "Something went wrong.")
+                            UiMessage.Error(result.message ?: R.string.something_went_wrong)
                         _authUiState.value = UiState.Idle
                     }
 
@@ -102,7 +103,7 @@ class AuthViewModel @Inject constructor(
                 }
             } else {
                 _uiMessageState.value =
-                    UiMessage.Error("No internet connection.")
+                    UiMessage.Error(R.string.no_internet)
             }
         }
     }
