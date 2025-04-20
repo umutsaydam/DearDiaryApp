@@ -104,4 +104,5 @@
     <string name="diary_not_found">Diary not found.</string>
     <string name="username_taken">This username already taken.</string>
     <string name="username_password_wrong">Username or password wrong.</string>
+    <string name="need_notification_permission">Notification permission required!</string>
 </resources>
