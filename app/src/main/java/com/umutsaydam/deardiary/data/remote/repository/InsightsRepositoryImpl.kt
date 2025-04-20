@@ -4,44 +4,48 @@ import com.umutsaydam.deardiary.R
 import com.umutsaydam.deardiary.data.remote.DearDiaryApiService
 import com.umutsaydam.deardiary.data.remote.mapper.DiaryEmotionMapper.toEntity
 import com.umutsaydam.deardiary.data.remote.mapper.TotalInsightsMapper.toEntity
+import com.umutsaydam.deardiary.data.remote.safeApiCall
 import com.umutsaydam.deardiary.domain.sealedStates.Resource
 import com.umutsaydam.deardiary.domain.entity.DiaryEmotionEntity
 import com.umutsaydam.deardiary.domain.entity.TotalInsightsEntity
 import com.umutsaydam.deardiary.domain.repository.InsightsRepository
+import com.umutsaydam.deardiary.domain.useCases.IsInternetAvailableUseCase
 import javax.inject.Inject
 
 class InsightsRepositoryImpl @Inject constructor(
-    private val dearDiaryApiService: DearDiaryApiService
+    private val dearDiaryApiService: DearDiaryApiService,
+    private val isInternetAvailableUseCase: IsInternetAvailableUseCase
 ) : InsightsRepository {
 
     override suspend fun getTotalInsights(): Resource<TotalInsightsEntity> {
-        val result = dearDiaryApiService.getTotalInsights()
         // 401 Token is wrong or expired.
         // 200 TotalInsightsEntity.
-
-        if (result.code() == 200) {
-            result.body()?.let {
-                return Resource.Success(it.toEntity())
+        return safeApiCall(
+            isInternetAvailable = isInternetAvailableUseCase(),
+            apiCall = { dearDiaryApiService.getTotalInsights() },
+            successCode = 200,
+            errorMessages = mapOf(
+                401 to R.string.need_resign
+            ),
+            map = { totalInsightsDto ->
+                totalInsightsDto.toEntity()
             }
-        } else if (result.code() == 401) {
-            return Resource.Error(401, R.string.need_resign)
-        }
-        return Resource.Error()
+        )
     }
 
     override suspend fun getTotalEmotionInsights(timeRange: String): Resource<List<DiaryEmotionEntity>> {
-        val result = dearDiaryApiService.getTotalEmotionInsights(timeRange)
         // 401 Token is wrong or expired.
         // 200 List<DiaryEmotionEntity>.
-
-        if (result.code() == 200) {
-            result.body()?.let { body ->
-                val entityList = body.map { it.toEntity() }
-                return Resource.Success(entityList)
+        return safeApiCall(
+            isInternetAvailable = isInternetAvailableUseCase(),
+            apiCall = { dearDiaryApiService.getTotalEmotionInsights(timeRange) },
+            successCode = 200,
+            errorMessages = mapOf(
+                401 to R.string.need_resign
+            ),
+            map = { dtoList ->
+                dtoList.map { it.toEntity() }
             }
-        } else if (result.code() == 401) {
-            return Resource.Error(401, R.string.need_resign)
-        }
-        return Resource.Error()
+        )
     }
 }

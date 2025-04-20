@@ -24,6 +24,7 @@ import com.umutsaydam.deardiary.domain.notification.ReminderScheduler
 import com.umutsaydam.deardiary.domain.repository.DiaryRepository
 import com.umutsaydam.deardiary.domain.repository.InsightsRepository
 import com.umutsaydam.deardiary.domain.repository.UserRepository
+import com.umutsaydam.deardiary.domain.useCases.IsInternetAvailableUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -51,18 +52,21 @@ object AppModule {
 
     @Provides
     fun provideInsightsRepository(
-        dearDiaryApiService: DearDiaryApiService
-    ): InsightsRepository = InsightsRepositoryImpl(dearDiaryApiService)
+        dearDiaryApiService: DearDiaryApiService,
+        isInternetAvailableUseCase: IsInternetAvailableUseCase,
+    ): InsightsRepository = InsightsRepositoryImpl(dearDiaryApiService, isInternetAvailableUseCase)
 
     @Provides
     fun provideUserRepository(
-        dearDiaryApiService: DearDiaryApiService
-    ): UserRepository = UserRepositoryImpl(dearDiaryApiService)
+        dearDiaryApiService: DearDiaryApiService,
+        isInternetAvailableUseCase: IsInternetAvailableUseCase
+    ): UserRepository = UserRepositoryImpl(dearDiaryApiService, isInternetAvailableUseCase)
 
     @Provides
     fun provideDiaryRepository(
-        dearDiaryApiService: DearDiaryApiService
-    ): DiaryRepository = DiaryRepositoryImpl(dearDiaryApiService)
+        dearDiaryApiService: DearDiaryApiService,
+        isInternetAvailableUseCase: IsInternetAvailableUseCase
+    ): DiaryRepository = DiaryRepositoryImpl(dearDiaryApiService, isInternetAvailableUseCase)
 
     @Provides
     @Singleton

@@ -5,73 +5,82 @@ import com.umutsaydam.deardiary.data.remote.DearDiaryApiService
 import com.umutsaydam.deardiary.data.remote.mapper.DiaryMapper.toDto
 import com.umutsaydam.deardiary.data.remote.mapper.DiaryMapper.toEntity
 import com.umutsaydam.deardiary.data.remote.mapper.DiaryMapper.toNullUuidDto
+import com.umutsaydam.deardiary.data.remote.safeApiCall
 import com.umutsaydam.deardiary.domain.sealedStates.Resource
 import com.umutsaydam.deardiary.domain.entity.DiaryEntity
 import com.umutsaydam.deardiary.domain.repository.DiaryRepository
+import com.umutsaydam.deardiary.domain.useCases.IsInternetAvailableUseCase
 import java.util.UUID
 import javax.inject.Inject
 
 class DiaryRepositoryImpl @Inject constructor(
-    private val dearDiaryApiService: DearDiaryApiService
+    private val dearDiaryApiService: DearDiaryApiService,
+    private val isInternetAvailableUseCase: IsInternetAvailableUseCase
 ) : DiaryRepository {
 
     override suspend fun getAllDiaries(): Resource<List<DiaryEntity>> {
-        val response = dearDiaryApiService.getDiaries()
         // 401 Token is wrong or expired.
         // 200 List<DiaryEntity>.
-        if (response.code() == 200) {
-            response.body()?.let { diaryDtoList ->
-                val listDiaryEntity = diaryDtoList.map { dto -> dto.toEntity() }
-                return Resource.Success(listDiaryEntity)
+        return safeApiCall(
+            isInternetAvailable = isInternetAvailableUseCase(),
+            apiCall = { dearDiaryApiService.getDiaries() },
+            successCode = 200,
+            errorMessages = mapOf(
+                401 to R.string.need_resign
+            ),
+            map = { dtoList ->
+                dtoList.map { it.toEntity() }
             }
-        } else if (response.code() == 401) {
-            return Resource.Error(401, R.string.need_resign)
-        }
-        return Resource.Error()
+        )
     }
 
     override suspend fun saveDiary(diaryEntity: DiaryEntity): Resource<DiaryEntity> {
-        val response = dearDiaryApiService.saveDiary(diaryEntity.toNullUuidDto())
         // 401 Token is wrong or expired.
         // 403 DiaryAlreadyExistException.
         // 201 DiaryEntity.
-
-        if (response.code() == 201) {
-            response.body()?.let {
-                return Resource.Success(it.toEntity())
+        return safeApiCall(
+            isInternetAvailable = isInternetAvailableUseCase(),
+            apiCall = { dearDiaryApiService.saveDiary(diaryEntity.toNullUuidDto()) },
+            successCode = 201,
+            errorMessages = mapOf(
+                401 to R.string.need_resign,
+                403 to R.string.added_at_same_date
+            ),
+            map = { savedDiaryDto ->
+                savedDiaryDto.toEntity()
             }
-        } else if (response.code() == 401) {
-            return Resource.Error(401, R.string.need_resign)
-        } else if (response.code() == 403) {
-            return Resource.Error(403, R.string.added_at_same_date)
-        }
-        return Resource.Error()
+        )
     }
 
     override suspend fun deleteDiary(diaryId: UUID): Resource<Unit> {
-        val response = dearDiaryApiService.deleteDiary(diaryId)
+        // 401 Token is wrong or expired.
         // 200 Ok.
-
-        if (response.code() == 200) {
-            return Resource.Success()
-        }
-        return Resource.Error()
+        return safeApiCall(
+            isInternetAvailable = isInternetAvailableUseCase(),
+            apiCall = { dearDiaryApiService.deleteDiary(diaryId) },
+            successCode = 200,
+            errorMessages = mapOf(
+                401 to R.string.need_resign
+            ),
+            map = {}
+        )
     }
 
     override suspend fun updateDiary(diaryEntity: DiaryEntity): Resource<DiaryEntity> {
-        val response = dearDiaryApiService.updateDiary(diaryEntity.toDto())
         // 401 Token is wrong or expired.
         // 404 Diary not found.
         // 200 DiaryEntity.
-        if (response.code() == 200) {
-            response.body()?.let {
-                return Resource.Success(it.toEntity())
+        return safeApiCall(
+            isInternetAvailable = isInternetAvailableUseCase(),
+            apiCall = { dearDiaryApiService.updateDiary(diaryEntity.toDto()) },
+            successCode = 200,
+            errorMessages = mapOf(
+                401 to R.string.need_resign,
+                404 to R.string.diary_not_found
+            ),
+            map = { updatedDto ->
+                updatedDto.toEntity()
             }
-        } else if (response.code() == 401) {
-            return Resource.Error(response.code(), R.string.need_resign)
-        } else if (response.code() == 404) {
-            return Resource.Error(response.code(), R.string.diary_not_found)
-        }
-        return Resource.Error()
+        )
     }
 }
