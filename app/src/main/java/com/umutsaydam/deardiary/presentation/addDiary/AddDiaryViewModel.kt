@@ -75,8 +75,6 @@ class AddDiaryViewModel @Inject constructor(
                         )
                         _addDiaryUiState.value = UiState.Idle
                     }
-
-                    is Resource.Loading -> {}
                 }
             }else{
                 _uiMessageState.value =

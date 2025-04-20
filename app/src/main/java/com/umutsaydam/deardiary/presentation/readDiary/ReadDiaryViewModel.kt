@@ -96,8 +96,6 @@ class ReadDiaryViewModel @Inject constructor(
                             )
                             _readDiaryUiState.value = UiState.Idle
                         }
-
-                        is Resource.Loading -> {}
                     }
                 }
             } else {

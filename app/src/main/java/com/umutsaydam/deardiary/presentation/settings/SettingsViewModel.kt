@@ -83,8 +83,6 @@ class SettingsViewModel @Inject constructor(
                     is Resource.Error -> {
                         _isLogout.value = true
                     }
-
-                    is Resource.Loading -> {}
                 }
             }
         }

@@ -79,8 +79,6 @@ class DiariesViewModel @Inject constructor(
                             statusCode = result.status
                         )
                     }
-
-                    is Resource.Loading -> {}
                 }
             }
         } else {

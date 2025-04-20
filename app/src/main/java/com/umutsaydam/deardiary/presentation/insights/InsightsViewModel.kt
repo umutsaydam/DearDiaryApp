@@ -64,8 +64,6 @@ class InsightsViewModel @Inject constructor(
                             UiMessage.Error(result.message ?: R.string.something_went_wrong)
                         _totalInsightsUiState.value = UiState.Idle
                     }
-
-                    is Resource.Loading -> {}
                 }
             }
         }else{
@@ -92,8 +90,6 @@ class InsightsViewModel @Inject constructor(
                             UiMessage.Error(result.message ?: R.string.something_went_wrong)
                         _totalEmotionInsightsUiState.value = UiState.Idle
                     }
-
-                    is Resource.Loading -> {}
                 }
             }
         }else{

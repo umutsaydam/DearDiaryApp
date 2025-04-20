@@ -63,10 +63,6 @@ class AuthViewModel @Inject constructor(
                             UiMessage.Error(result.message ?: R.string.something_went_wrong)
                         _authUiState.value = UiState.Idle
                     }
-
-                    is Resource.Loading -> {
-                        UiState.Loading
-                    }
                 }
             }
         } else {
@@ -95,10 +91,6 @@ class AuthViewModel @Inject constructor(
                         _uiMessageState.value =
                             UiMessage.Error(result.message ?: R.string.something_went_wrong)
                         _authUiState.value = UiState.Idle
-                    }
-
-                    is Resource.Loading -> {
-                        UiState.Loading
                     }
                 }
             } else {
