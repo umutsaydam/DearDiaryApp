@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
@@ -204,7 +205,8 @@ fun AuthScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = PaddingXSmall),
+            .padding(bottom = PaddingXSmall)
+            .navigationBarsPadding(),
         contentAlignment = Alignment.BottomCenter
     ) {
         ColorfulText(
