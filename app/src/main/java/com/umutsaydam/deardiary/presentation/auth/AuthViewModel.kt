@@ -9,7 +9,6 @@ import com.umutsaydam.deardiary.domain.sealedStates.UiMessage
 import com.umutsaydam.deardiary.domain.sealedStates.UiState
 import com.umutsaydam.deardiary.domain.entity.TokenEntity
 import com.umutsaydam.deardiary.domain.entity.UserEntity
-import com.umutsaydam.deardiary.domain.useCases.IsInternetAvailableUseCase
 import com.umutsaydam.deardiary.domain.useCases.remote.auth.UserCreateUseCase
 import com.umutsaydam.deardiary.domain.useCases.remote.auth.UserLoginUseCase
 import com.umutsaydam.deardiary.domain.useCases.local.tokenUseCase.SaveTokenUseCase
@@ -23,8 +22,7 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
     private val createUseCase: UserCreateUseCase,
     private val loginUseCase: UserLoginUseCase,
-    private val saveTokenUseCase: SaveTokenUseCase,
-    private val isInternetAvailableUseCase: IsInternetAvailableUseCase
+    private val saveTokenUseCase: SaveTokenUseCase
 ) : ViewModel() {
 
     private val _authState = MutableStateFlow(AuthStateEnum.LOGIN)
@@ -47,27 +45,22 @@ class AuthViewModel @Inject constructor(
             return
         }
 
-        if (isInternetAvailableUseCase()) {
-            viewModelScope.launch {
-                _authUiState.value = UiState.Loading
-                val result = createUseCase(UserEntity(username = username, password = password))
-                when (result) {
-                    is Resource.Success -> {
-                        switchLoginState()
-                        _uiMessageState.value = UiMessage.Success(R.string.signed_up_successfully)
-                        _authUiState.value = UiState.Idle
-                    }
+        viewModelScope.launch {
+            _authUiState.value = UiState.Loading
+            val result = createUseCase(UserEntity(username = username, password = password))
+            when (result) {
+                is Resource.Success -> {
+                    switchLoginState()
+                    _uiMessageState.value = UiMessage.Success(R.string.signed_up_successfully)
+                    _authUiState.value = UiState.Idle
+                }
 
-                    is Resource.Error -> {
-                        _uiMessageState.value =
-                            UiMessage.Error(result.message ?: R.string.something_went_wrong)
-                        _authUiState.value = UiState.Idle
-                    }
+                is Resource.Error -> {
+                    _uiMessageState.value =
+                        UiMessage.Error(result.message ?: R.string.something_went_wrong)
+                    _authUiState.value = UiState.Idle
                 }
             }
-        } else {
-            _uiMessageState.value =
-                UiMessage.Error(R.string.no_internet)
         }
     }
 
@@ -78,24 +71,19 @@ class AuthViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            if (isInternetAvailableUseCase()) {
-                _authUiState.value = UiState.Loading
-                when (val result =
-                    loginUseCase(UserEntity(username = username, password = password))) {
-                    is Resource.Success -> {
-                        result.data?.let { saveTokenUseCase(it.token) }
-                        _authUiState.value = UiState.Success()
-                    }
-
-                    is Resource.Error -> {
-                        _uiMessageState.value =
-                            UiMessage.Error(result.message ?: R.string.something_went_wrong)
-                        _authUiState.value = UiState.Idle
-                    }
+            _authUiState.value = UiState.Loading
+            when (val result =
+                loginUseCase(UserEntity(username = username, password = password))) {
+                is Resource.Success -> {
+                    result.data?.let { saveTokenUseCase(it.token) }
+                    _authUiState.value = UiState.Success()
                 }
-            } else {
-                _uiMessageState.value =
-                    UiMessage.Error(R.string.no_internet)
+
+                is Resource.Error -> {
+                    _uiMessageState.value =
+                        UiMessage.Error(result.message ?: R.string.something_went_wrong)
+                    _authUiState.value = UiState.Idle
+                }
             }
         }
     }

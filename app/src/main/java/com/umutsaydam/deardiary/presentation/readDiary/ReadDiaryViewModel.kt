@@ -1,6 +1,5 @@
 package com.umutsaydam.deardiary.presentation.readDiary
 
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.GenericFontFamily
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,7 +10,6 @@ import com.umutsaydam.deardiary.domain.sealedStates.UiState
 import com.umutsaydam.deardiary.domain.entity.DiaryEntity
 import com.umutsaydam.deardiary.domain.entity.FontFamilySealed
 import com.umutsaydam.deardiary.domain.entity.FontSizeSealed
-import com.umutsaydam.deardiary.domain.useCases.IsInternetAvailableUseCase
 import com.umutsaydam.deardiary.domain.useCases.local.diaryRoomUseCase.UpsertDiaryRoomUseCase
 import com.umutsaydam.deardiary.domain.useCases.local.fontFamilyAndSizeUseCase.GetFontFamilyUseCase
 import com.umutsaydam.deardiary.domain.useCases.local.fontFamilyAndSizeUseCase.GetFontSizeUseCase
@@ -28,8 +26,7 @@ class ReadDiaryViewModel @Inject constructor(
     private val getFontFamilyUseCase: GetFontFamilyUseCase,
     private val getFontSizeUseCase: GetFontSizeUseCase,
     private val updateDiaryServerUseCase: UpdateDiaryServerUseCase,
-    private val upsertDiaryRoomUseCase: UpsertDiaryRoomUseCase,
-    private val isInternetAvailableUseCase: IsInternetAvailableUseCase
+    private val upsertDiaryRoomUseCase: UpsertDiaryRoomUseCase
 ) : ViewModel() {
 
     private val _defaultFont = MutableStateFlow<GenericFontFamily?>(null)
@@ -63,7 +60,7 @@ class ReadDiaryViewModel @Inject constructor(
 
     fun update() {
         val currDiary = (_readDiaryUiState.value as? UiState.Success)?.data?.copy()
-        currDiary?.let { it ->
+        currDiary?.let {
             if (_diaryContent.value == it.diaryContent && _diaryEmotion.value == it.diaryEmotion) {
                 _uiMessageState.value = UiMessage.Error(R.string.diary_already_update)
                 return
@@ -74,33 +71,28 @@ class ReadDiaryViewModel @Inject constructor(
                 return
             }
 
-            if (isInternetAvailableUseCase()) {
-                viewModelScope.launch {
-                    _readDiaryUiState.value = UiState.Loading
-                    it.diaryContent = _diaryContent.value!!
-                    it.diaryEmotion = _diaryEmotion.value!!
-                    when (val result = updateDiaryServerUseCase(it)) {
-                        is Resource.Success -> {
-                            result.data?.let { newDiary ->
-                                setDiary(newDiary)
-                                upsertDiaryRoomUseCase(newDiary)
-                                _uiMessageState.value =
-                                    UiMessage.Success(R.string.diary_updated_successfully)
-                            }
-                        }
-
-                        is Resource.Error -> {
-                            _uiMessageState.value = UiMessage.Error(
-                                message = result.message ?: R.string.something_went_wrong,
-                                statusCode = result.status
-                            )
-                            _readDiaryUiState.value = UiState.Idle
+            viewModelScope.launch {
+                _readDiaryUiState.value = UiState.Loading
+                it.diaryContent = _diaryContent.value!!
+                it.diaryEmotion = _diaryEmotion.value!!
+                when (val result = updateDiaryServerUseCase(it)) {
+                    is Resource.Success -> {
+                        result.data?.let { newDiary ->
+                            setDiary(newDiary)
+                            upsertDiaryRoomUseCase(newDiary)
+                            _uiMessageState.value =
+                                UiMessage.Success(R.string.diary_updated_successfully)
                         }
                     }
+
+                    is Resource.Error -> {
+                        _uiMessageState.value = UiMessage.Error(
+                            message = result.message ?: R.string.something_went_wrong,
+                            statusCode = result.status
+                        )
+                        _readDiaryUiState.value = UiState.Idle
+                    }
                 }
-            } else {
-                _uiMessageState.value =
-                    UiMessage.Error(R.string.no_internet)
             }
         }
     }

@@ -11,7 +11,6 @@ import com.umutsaydam.deardiary.domain.sealedStates.UiState
 import com.umutsaydam.deardiary.domain.entity.DiaryEmotionEntity
 import com.umutsaydam.deardiary.domain.entity.TotalInsightsEntity
 import com.umutsaydam.deardiary.domain.entity.emotionList
-import com.umutsaydam.deardiary.domain.useCases.IsInternetAvailableUseCase
 import com.umutsaydam.deardiary.domain.useCases.remote.insightsUseCase.GetTotalEmotionInsightsUseCase
 import com.umutsaydam.deardiary.domain.useCases.remote.insightsUseCase.GetTotalInsightsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,8 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class InsightsViewModel @Inject constructor(
     private val getTotalInsightsUseCase: GetTotalInsightsUseCase,
-    private val getTotalEmotionInsightsUseCase: GetTotalEmotionInsightsUseCase,
-    private val isInternetAvailableUseCase: IsInternetAvailableUseCase
+    private val getTotalEmotionInsightsUseCase: GetTotalEmotionInsightsUseCase
 ) : ViewModel() {
 
     private val _insightEmotionTimeState =
@@ -48,53 +46,43 @@ class InsightsViewModel @Inject constructor(
     }
 
     private fun getTotalInsights() {
-        if(isInternetAvailableUseCase()){
-            viewModelScope.launch {
-                _totalInsightsUiState.value = UiState.Loading
+        viewModelScope.launch {
+            _totalInsightsUiState.value = UiState.Loading
 
-                when (val result = getTotalInsightsUseCase()) {
-                    is Resource.Success -> {
-                        result.data?.let {
-                            _totalInsightsUiState.value = UiState.Success(it)
-                        }
-                    }
-
-                    is Resource.Error -> {
-                        _uiMessageState.value =
-                            UiMessage.Error(result.message ?: R.string.something_went_wrong)
-                        _totalInsightsUiState.value = UiState.Idle
+            when (val result = getTotalInsightsUseCase()) {
+                is Resource.Success -> {
+                    result.data?.let {
+                        _totalInsightsUiState.value = UiState.Success(it)
                     }
                 }
+
+                is Resource.Error -> {
+                    _uiMessageState.value =
+                        UiMessage.Error(result.message ?: R.string.something_went_wrong)
+                    _totalInsightsUiState.value = UiState.Idle
+                }
             }
-        }else{
-            _uiMessageState.value =
-                UiMessage.Error(R.string.no_internet)
         }
     }
 
     private fun getTotalEmotionInsights() {
-        if(isInternetAvailableUseCase()){
-            viewModelScope.launch {
-                _totalEmotionInsightsUiState.value = UiState.Loading
+        viewModelScope.launch {
+            _totalEmotionInsightsUiState.value = UiState.Loading
 
-                when (val result =
-                    getTotalEmotionInsightsUseCase(_insightEmotionTimeState.value.insightParam)) {
-                    is Resource.Success -> {
-                        result.data?.let {
-                            _totalEmotionInsightsUiState.value = UiState.Success(it)
-                        }
-                    }
-
-                    is Resource.Error -> {
-                        _uiMessageState.value =
-                            UiMessage.Error(result.message ?: R.string.something_went_wrong)
-                        _totalEmotionInsightsUiState.value = UiState.Idle
+            when (val result =
+                getTotalEmotionInsightsUseCase(_insightEmotionTimeState.value.insightParam)) {
+                is Resource.Success -> {
+                    result.data?.let {
+                        _totalEmotionInsightsUiState.value = UiState.Success(it)
                     }
                 }
+
+                is Resource.Error -> {
+                    _uiMessageState.value =
+                        UiMessage.Error(result.message ?: R.string.something_went_wrong)
+                    _totalEmotionInsightsUiState.value = UiState.Idle
+                }
             }
-        }else{
-            _uiMessageState.value =
-                UiMessage.Error(R.string.no_internet)
         }
     }
 
