@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
@@ -101,11 +100,11 @@ fun BottomXRMenuWithGesture(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .consumeWindowInsets(paddingValues)
             .imePadding()
     ) {
         Box(
             modifier = Modifier
+                .padding(paddingValues.calculateBottomPadding())
                 .align(Alignment.BottomCenter)
                 .pointerInput(isMoodDialogOpen) {
                     if (isMoodDialogOpen) {
@@ -177,7 +176,7 @@ fun DairyMoodPopup(
         Popup(
             alignment = Alignment.BottomCenter,
             onDismissRequest = { onDismissed() },
-            offset = IntOffset(0, -235)
+            offset = IntOffset(0, -300)
         ) {
             Box(
                 modifier = Modifier

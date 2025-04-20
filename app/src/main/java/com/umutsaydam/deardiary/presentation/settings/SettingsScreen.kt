@@ -1,5 +1,10 @@
 package com.umutsaydam.deardiary.presentation.settings
 
+import android.Manifest
+import android.os.Build
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -77,6 +82,23 @@ fun SettingsScreen(
         }
     }
 
+    var selectedHour by remember { mutableStateOf(-1) }
+    var selectedMinute by remember { mutableStateOf(-1) }
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted && selectedHour != -1 && selectedMinute != -1) {
+            reminderViewModel.scheduleReminder(context, selectedHour, selectedMinute)
+            reminderViewModel.setReminder(true)
+        } else {
+            Toast.makeText(
+                context,
+                context.getString(R.string.need_notification_permission),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
     BaseScaffold(
         title = { Text(stringResource(R.string.settings)) },
         bottomBar = {
@@ -95,8 +117,14 @@ fun SettingsScreen(
                 ReminderTimePicker(
                     timePickerState = timePickerState,
                     onSelected = { hour, minute ->
-                        reminderViewModel.scheduleReminder(context, hour, minute)
-                        reminderViewModel.setReminder(true)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            selectedHour = hour
+                            selectedMinute = minute
+                            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        } else {
+                            reminderViewModel.scheduleReminder(context, hour, minute)
+                            reminderViewModel.setReminder(true)
+                        }
                     },
                     onDismissed = {
                         isReminderTimeOpen = false

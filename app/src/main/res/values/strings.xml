@@ -27,8 +27,8 @@
     <string name="sign_up">Sign up</string>
     <string name="dont_have_account">Don\'t you have an account? </string>
     <string name="do_have_account">Do you have an account? </string>
-    <string name="sign_up_now">Sign up now.</string>
-    <string name="sign_in_now">Sign in now.</string>
+    <string name="sign_up_now">&#160;Sign up now.</string>
+    <string name="sign_in_now">&#160;Sign in now.</string>
     <string name="username_passwords_cannot_empty">Username, passwords can not be empty.</string>
     <string name="passwords_does_not_match">Passwords does not match.</string>
     <string name="signed_up_successfully">Signed up Successfully!</string>
@@ -104,4 +104,5 @@
     <string name="diary_not_found">Diary not found.</string>
     <string name="username_taken">This username already taken.</string>
     <string name="username_password_wrong">Username or password wrong.</string>
+    <string name="need_notification_permission">Notification permission required!</string>
 </resources>
